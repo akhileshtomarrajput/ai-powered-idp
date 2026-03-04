@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered IDP — Platform Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root[data-theme="dark"]{
+  --bg:#080c14;--bg2:#0d1320;--bg3:#111827;--border:#1e2d45;
+  --accent:#00e5ff;--accent2:#7c3aed;--accent3:#10b981;--warn:#f59e0b;--danger:#ef4444;
+  --text:#e2e8f0;--muted:#64748b;--card:#0f1a2e;--overlay:rgba(8,12,20,0.85);
+}
+:root[data-theme="light"]{
+  --bg:#f0f4f8;--bg2:#e2e8f0;--bg3:#ffffff;--border:#cbd5e1;
+  --accent:#0284c7;--accent2:#7c3aed;--accent3:#059669;--warn:#d97706;--danger:#dc2626;
+  --text:#0f172a;--muted:#64748b;--card:#ffffff;--overlay:rgba(240,244,248,0.85);
+}
+*{margin:0;padding:0;box-sizing:border-box;transition:background 0.3s,border-color 0.3s,color 0.2s;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+[data-theme="dark"] body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.blob1{position:fixed;top:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%);pointer-events:none;z-index:0;animation:blobMove 8s ease-in-out infinite alternate;}
+.blob2{position:fixed;bottom:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(0,229,255,0.1) 0%,transparent 70%);pointer-events:none;z-index:0;animation:blobMove2 10s ease-in-out infinite alternate;}
+[data-theme="light"] .blob1,[data-theme="light"] .blob2{opacity:0.3;}
+@keyframes blobMove{to{transform:translate(60px,60px);}}
+@keyframes blobMove2{to{transform:translate(-40px,-40px);}}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;position:fixed;height:100vh;top:0;left:0;z-index:100;}
+.logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.logo-text{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;}
+.logo-sub{font-size:10px;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace;}
+.nav-section{padding:0 12px;margin-bottom:8px;}
+.nav-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:0 8px;margin-bottom:6px;font-family:'Space Mono',monospace;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);transition:all 0.2s;margin-bottom:2px;position:relative;border:1px solid transparent;}
+.nav-item:hover{background:var(--border);color:var(--text);}
+.nav-item.active{background:rgba(0,229,255,0.1);color:var(--accent);border-color:rgba(0,229,255,0.2);}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--accent);border-radius:0 2px 2px 0;}
+.nav-badge{margin-left:auto;background:var(--danger);color:white;font-size:9px;font-family:'Space Mono',monospace;padding:2px 6px;border-radius:20px;font-weight:700;}
+.nav-badge.green{background:var(--accent3);}
+.sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+.user-info{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:white;flex-shrink:0;}
+.user-name{font-size:12px;font-weight:700;}
+.user-role{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
+
+/* MAIN */
+.main{margin-left:220px;flex:1;padding:28px 32px;animation:fadeIn 0.6s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.page-title{font-size:22px;font-weight:800;}
+.page-subtitle{font-size:12px;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace;}
+.topbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.status-pill{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:6px 14px;font-size:11px;font-family:'Space Mono',monospace;color:var(--accent3);font-weight:700;}
+.status-pill.error{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--danger);}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--accent3);animation:pulse 1.5s ease-in-out infinite;}
+.pulse.red{background:var(--danger);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+.btn{padding:8px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Syne',sans-serif;transition:all 0.2s;}
+.btn-primary{background:var(--accent);color:#000;}
+.btn-primary:hover{filter:brightness(0.85);transform:translateY(-1px);}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-sm{padding:5px 12px;font-size:11px;}
+.btn-danger{background:var(--danger);color:white;}
+.theme-toggle{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer;font-size:11px;display:flex;align-items:center;gap:6px;color:var(--text);font-family:'Space Mono',monospace;font-weight:700;}
+.theme-toggle:hover{border-color:var(--accent);}
+
+/* CONFIG BAR */
+.config-bar{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.config-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Space Mono',monospace;white-space:nowrap;}
+.config-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--text);font-family:'Space Mono',monospace;outline:none;width:260px;}
+.config-input:focus{border-color:var(--accent);}
+.backend-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+.backend-dot.ok{background:var(--accent3);animation:pulse 2s infinite;}
+.backend-dot.err{background:var(--danger);}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.2s;cursor:pointer;}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent-color,var(--accent));}
+.stat-card.green{--accent-color:var(--accent3);}
+.stat-card.purple{--accent-color:var(--accent2);}
+.stat-card.warn{--accent-color:var(--warn);}
+.stat-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;}
+.stat-value{font-size:32px;font-weight:800;line-height:1;margin-bottom:6px;}
+.stat-value.cyan{color:var(--accent);}
+.stat-value.green{color:var(--accent3);}
+.stat-value.purple{color:var(--accent2);}
+.stat-value.warn{color:var(--warn);}
+.stat-change{font-size:11px;font-family:'Space Mono',monospace;color:var(--accent3);}
+.stat-change.down{color:var(--danger);}
+.stat-icon{position:absolute;right:16px;top:16px;font-size:28px;opacity:0.15;}
+.skeleton{background:linear-gradient(90deg,var(--border) 25%,var(--bg3) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px;height:32px;width:80px;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* GRID */
+.main-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color 0.2s;}
+.card:hover{border-color:rgba(0,229,255,0.2);}
+.card.span2{grid-column:span 2;}
+.card.span3{grid-column:span 3;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.card-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;font-family:'Space Mono',monospace;}
+.card-action{font-size:10px;color:var(--accent);cursor:pointer;font-family:'Space Mono',monospace;border:1px solid rgba(0,229,255,0.3);padding:3px 10px;border-radius:4px;transition:all 0.2s;}
+.card-action:hover{background:rgba(0,229,255,0.1);}
+.source-tag{font-size:9px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:4px;font-weight:700;}
+.source-tag.live{background:rgba(16,185,129,0.15);color:var(--accent3);border:1px solid rgba(16,185,129,0.3);}
+.source-tag.mock{background:rgba(100,116,139,0.15);color:var(--muted);border:1px solid rgba(100,116,139,0.3);}
+
+/* DEPLOY ITEMS */
+.deploy-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.deploy-item:last-child{border-bottom:none;}
+.deploy-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.deploy-icon.success{background:rgba(16,185,129,0.15);}
+.deploy-icon.running{background:rgba(0,229,255,0.15);}
+.deploy-icon.failed{background:rgba(239,68,68,0.15);}
+.deploy-icon.pending{background:rgba(245,158,11,0.15);}
+.deploy-info{flex:1;}
+.deploy-name{font-size:13px;font-weight:700;}
+.deploy-meta{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
+.deploy-status{font-size:10px;font-family:'Space Mono',monospace;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.deploy-status.success{background:rgba(16,185,129,0.15);color:var(--accent3);}
+.deploy-status.running{background:rgba(0,229,255,0.15);color:var(--accent);}
+.deploy-status.failed{background:rgba(239,68,68,0.15);color:var(--danger);}
+.deploy-status.pending{background:rgba(245,158,11,0.15);color:var(--warn);}
+
+/* ALERTS */
+.alert-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.alert-item:last-child{border-bottom:none;}
+.alert-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0;animation:pulse 1.5s infinite;}
+.alert-dot.critical{background:var(--danger);}
+.alert-dot.warning{background:var(--warn);}
+.alert-dot.info{background:var(--accent);animation:none;}
+.alert-title{font-size:12px;font-weight:700;margin-bottom:2px;}
+.alert-desc{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
+.alert-time{font-size:9px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
+
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;margin-bottom:8px;}
+.pipeline-step{flex:1;text-align:center;position:relative;}
+.pipeline-step::after{content:'';position:absolute;top:16px;right:-50%;width:100%;height:2px;background:var(--border);z-index:0;}
+.pipeline-step:last-child::after{display:none;}
+.pipeline-step.done::after{background:var(--accent3);}
+.pipeline-step.running::after{background:linear-gradient(to right,var(--accent3),var(--border));}
+.step-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-size:13px;position:relative;z-index:1;background:var(--bg);}
+.step-circle.done{border-color:var(--accent3);background:rgba(16,185,129,0.1);}
+.step-circle.running{border-color:var(--accent);background:rgba(0,229,255,0.1);animation:glowPulse 2s infinite;}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,0.4);}50%{box-shadow:0 0 10px 3px rgba(0,229,255,0.2);}}
+.step-name{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;}
+.step-name.done{color:var(--accent3);}
+.step-name.running{color:var(--accent);}
+
+/* NODES */
+.nodes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.node-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;transition:all 0.2s;}
+.node-card:hover{border-color:var(--accent3);}
+.node-name{font-size:11px;font-weight:700;font-family:'Space Mono',monospace;margin-bottom:8px;color:var(--accent);}
+.node-stat{display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px;}
+.node-stat-label{color:var(--muted);}
+.node-stat-value{font-family:'Space Mono',monospace;font-weight:700;}
+.progress-bar{height:3px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;transition:width 1s ease;}
+.progress-fill.cyan{background:var(--accent);}
+.progress-fill.green{background:var(--accent3);}
+.progress-fill.warn{background:var(--warn);}
+.progress-fill.danger{background:var(--danger);}
+
+/* SECURITY */
+.security-ring{display:flex;align-items:center;gap:20px;margin-bottom:16px;}
+.ring-chart{width:80px;height:80px;position:relative;flex-shrink:0;}
+.ring-chart svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:8;}
+.ring-fill{fill:none;stroke:var(--accent3);stroke-width:8;stroke-linecap:round;stroke-dasharray:220;stroke-dashoffset:22;}
+.ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--accent3);font-family:'Space Mono',monospace;}
+.sec-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;}
+.sec-label{color:var(--muted);font-family:'Space Mono',monospace;}
+.sec-val{font-weight:700;font-family:'Space Mono',monospace;}
+.sec-val.good{color:var(--accent3);}
+.sec-val.warn{color:var(--warn);}
+.sec-val.bad{color:var(--danger);}
+
+/* CHART */
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:8px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar{width:100%;border-radius:3px 3px 0 0;min-height:4px;}
+.bar.cyan{background:linear-gradient(to top,var(--accent2),var(--accent));}
+.bar.green{background:linear-gradient(to top,#065f46,var(--accent3));}
+.bar-label{font-size:8px;color:var(--muted);font-family:'Space Mono',monospace;}
+
+/* AI CHAT */
+.ai-chat{display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;}
+.ai-chat::-webkit-scrollbar{width:3px;}
+.ai-chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.chat-msg{display:flex;gap:8px;align-items:flex-start;}
+.chat-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.chat-avatar.ai{background:linear-gradient(135deg,var(--accent2),var(--accent));}
+.chat-avatar.sys{background:var(--border);}
+.chat-avatar.user{background:var(--accent3);}
+.chat-bubble{background:var(--bg3);border:1px solid var(--border);border-radius:0 8px 8px 8px;padding:8px 12px;font-size:11px;line-height:1.6;font-family:'Space Mono',monospace;flex:1;white-space:pre-wrap;}
+.chat-bubble.ai-bubble{background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.3);color:#c4b5fd;}
+.chat-bubble.user-bubble{background:rgba(0,229,255,0.08);border-color:rgba(0,229,255,0.2);}
+[data-theme="light"] .chat-bubble.ai-bubble{color:var(--accent2);}
+.chat-time{font-size:9px;color:var(--muted);margin-top:3px;}
+.ai-input-area{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.ai-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text);font-family:'Space Mono',monospace;outline:none;}
+.ai-input:focus{border-color:var(--accent2);}
+.ai-input::placeholder{color:var(--muted);}
+.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:typingBounce 1.2s infinite;margin-right:3px;}
+.typing span:nth-child(2){animation-delay:0.2s;}
+.typing span:nth-child(3){animation-delay:0.4s;}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:var(--overlay);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:500px;transform:translateY(20px);transition:transform 0.3s;position:relative;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-title{font-size:16px;font-weight:800;margin-bottom:6px;}
+.modal-sub{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:20px;}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:14px;padding:4px 10px;}
+.modal-close:hover{border-color:var(--danger);color:var(--danger);}
+.form-row{margin-bottom:14px;}
+.form-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:6px;display:block;}
+.form-input,.form-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--text);font-family:'Space Mono',monospace;outline:none;}
+.form-input:focus,.form-select:focus{border-color:var(--accent);}
+.form-select option{background:var(--bg2);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:10px;}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:12px;font-family:'Space Mono',monospace;min-width:260px;animation:toastIn 0.3s ease;display:flex;align-items:center;gap:10px;}
+.toast.success{border-color:var(--accent3);}
+.toast.error{border-color:var(--danger);}
+.toast.info{border-color:var(--accent);}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--bg3);border-radius:8px;padding:4px;}
+.tab{flex:1;padding:6px;text-align:center;font-size:10px;font-family:'Space Mono',monospace;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:6px;color:var(--muted);transition:all 0.2s;}
+.tab.active{background:var(--accent);color:#000;}
+
+.page-section{display:none;}
+.page-section.active{display:block;animation:fadeIn 0.4s ease;}
+
+/* LOG VIEWER */
+.log-viewer{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'Space Mono',monospace;font-size:11px;height:300px;overflow-y:auto;line-height:1.7;}
+.log-line .ts{color:var(--muted);}
+.log-line .lvl-info{color:var(--accent);}
+.log-line .lvl-warn{color:var(--warn);}
+.log-line .lvl-err{color:var(--danger);}
+.log-line .lvl-ok{color:var(--accent3);}
+
+.metric-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.metric-row:last-child{border-bottom:none;}
+.metric-name{color:var(--muted);font-family:'Space Mono',monospace;}
+.metric-val{font-weight:700;font-family:'Space Mono',monospace;}
+.empty-state{text-align:center;padding:32px;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="blob1"></div>
+<div class="blob2"></div>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-text">⚡ IDP</div>
+    <div class="logo-sub">AI-Powered Platform</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Platform</div>
+    <div class="nav-item active" onclick="navTo('overview',this)"><span>▦</span> Overview</div>
+    <div class="nav-item" onclick="navTo('deployments',this)"><span>🚀</span> Deployments <span class="nav-badge green" id="deploy-badge">—</span></div>
+    <div class="nav-item" onclick="navTo('kubernetes',this)"><span>☸</span> Kubernetes</div>
+    <div class="nav-item" onclick="navTo('services',this)"><span>⬡</span> Services</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Observability</div>
+    <div class="nav-item" onclick="navTo('metrics',this)"><span>📊</span> Metrics</div>
+    <div class="nav-item" onclick="navTo('logs',this)"><span>📋</span> Logs</div>
+    <div class="nav-item" onclick="navTo('alerts',this)"><span>🔔</span> Alerts <span class="nav-badge" id="alert-badge">—</span></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Security</div>
+    <div class="nav-item" onclick="navTo('vault',this)"><span>🔐</span> Vault</div>
+    <div class="nav-item" onclick="navTo('cve',this)"><span>🔍</span> CVE Scan</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">AI</div>
+    <div class="nav-item" onclick="navTo('copilot',this)"><span>🤖</span> AI Copilot</div>
+    <div class="nav-item" onclick="navTo('autoheal',this)"><span>⚡</span> Auto-Heal</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">AT</div>
+      <div>
+        <div class="user-name">Akhilesh Tomar</div>
+        <div class="user-role">DevOps Engineer</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="page-title">Platform Overview</div>
+      <div class="page-subtitle" id="page-subtitle">cluster: prod-eks-ap-south-1 · namespace: default</div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill" id="sys-pill"><div class="pulse" id="sys-pulse"></div><span id="sys-status">Connecting...</span></div>
+      <button class="btn btn-ghost" onclick="refreshAll()">↻ Sync</button>
+      <button class="btn btn-primary" onclick="openDeployModal()">+ Deploy App</button>
+      <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙 Dark</button>
+    </div>
+  </div>
+
+  <!-- CONFIG BAR -->
+  <div class="config-bar">
+    <div class="backend-dot" id="backend-dot"></div>
+    <span class="config-label">Backend URL</span>
+    <input class="config-input" id="backend-url" value="http://localhost:8000" placeholder="http://localhost:8000" onchange="pingBackend()"/>
+    <button class="btn btn-ghost btn-sm" onclick="pingBackend()">Test Connection</button>
+    <span id="backend-status" style="font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);">Not connected</span>
+    <span style="margin-left:auto;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);">🟢 Live = real backend &nbsp;|&nbsp; 🔘 Offline = mock data</span>
+  </div>
+
+  <!-- OVERVIEW PAGE -->
+  <div id="page-overview" class="page-section active">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Cluster CPU</div>
+        <div class="stat-value cyan" id="stat-cpu"><div class="skeleton"></div></div>
+        <div class="stat-change" id="stat-cpu-sub">fetching...</div>
+        <div class="stat-icon">💻</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Active Pods</div>
+        <div class="stat-value green" id="stat-pods"><div class="skeleton"></div></div>
+        <div class="stat-change" id="stat-pods-sub">fetching...</div>
+        <div class="stat-icon">☸</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">Memory Usage</div>
+        <div class="stat-value purple" id="stat-mem"><div class="skeleton"></div></div>
+        <div class="stat-change" id="stat-mem-sub">fetching...</div>
+        <div class="stat-icon">🧠</div>
+      </div>
+      <div class="stat-card warn">
+        <div class="stat-label">Error Rate</div>
+        <div class="stat-value warn" id="stat-err"><div class="skeleton"></div></div>
+        <div class="stat-change" id="stat-err-sub">fetching...</div>
+        <div class="stat-icon">⚠️</div>
+      </div>
+    </div>
+    <div class="main-grid">
+      <div class="card span2">
+        <div class="card-header">
+          <div class="card-title">Deployments</div>
+          <span class="source-tag" id="deploy-src-tag">—</span>
+        </div>
+        <div id="recent-deploys"><div class="empty-state">Loading deployments...</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Active Alerts</div>
+          <span class="source-tag" id="alert-src-tag">—</span>
+        </div>
+        <div id="overview-alerts"><div class="empty-state">Loading alerts...</div></div>
+      </div>
+    </div>
+    <div class="main-grid">
+      <div class="card span3">
+        <div class="card-header">
+          <div class="card-title">CI/CD Pipeline — payment-service v2.4.1</div>
+          <div class="card-action" onclick="navTo('logs',null)">View Logs</div>
+        </div>
+        <div class="pipeline" id="pipeline-view"></div>
+      </div>
+    </div>
+    <div class="main-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🤖 AI Copilot</div>
+          <div id="copilot-tag-mini" style="font-size:9px;color:var(--accent2);font-family:'Space Mono',monospace;background:rgba(124,58,237,0.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(124,58,237,0.3);">Offline</div>
+        </div>
+        <div class="ai-chat" id="mini-chat"></div>
+        <div class="ai-input-area">
+          <input class="ai-input" id="mini-input" type="text" placeholder="Ask about your cluster..." onkeydown="if(event.key==='Enter')sendChat('mini')"/>
+          <button class="btn btn-primary" onclick="sendChat('mini')" style="padding:8px 14px;">→</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Cluster Nodes</div>
+          <span class="source-tag" id="node-src-tag">—</span>
+        </div>
+        <div class="nodes-grid" id="nodes-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Security Posture</div>
+          <div class="card-action" onclick="navTo('cve',null)">View CVEs</div>
+        </div>
+        <div class="security-ring">
+          <div class="ring-chart">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle class="ring-bg" cx="40" cy="40" r="35"/>
+              <circle class="ring-fill" id="sec-ring" cx="40" cy="40" r="35"/>
+            </svg>
+            <div class="ring-label" id="sec-score">—</div>
+          </div>
+          <div>
+            <div class="sec-item"><span class="sec-label">Critical CVEs</span><span class="sec-val bad" id="crit-cve">—</span></div>
+            <div class="sec-item"><span class="sec-label">High CVEs</span><span class="sec-val warn" id="high-cve">—</span></div>
+            <div class="sec-item"><span class="sec-label">Policies Passed</span><span class="sec-val good">98%</span></div>
+            <div class="sec-item"><span class="sec-label">Vault Secrets</span><span class="sec-val good">142 ✓</span></div>
+            <div class="sec-item"><span class="sec-label">RBAC</span><span class="sec-val good">100%</span></div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Deploy Frequency (7d)</div>
+        <div class="chart-bars" id="deploy-chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPLOYMENTS PAGE -->
+  <div id="page-deployments" class="page-section">
+    <div class="tabs">
+      <div class="tab active" onclick="filterDeploys('all',this)">All</div>
+      <div class="tab" onclick="filterDeploys('healthy',this)">Healthy</div>
+      <div class="tab" onclick="filterDeploys('degraded',this)">Degraded</div>
+      <div class="tab" onclick="filterDeploys('failed',this)">Failed</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">All Deployments <span class="source-tag" id="dep-page-tag" style="margin-left:8px;">—</span></div>
+        <button class="btn btn-primary btn-sm" onclick="openDeployModal()">+ New Deploy</button>
+      </div>
+      <div id="all-deploys"><div class="empty-state">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- KUBERNETES PAGE -->
+  <div id="page-kubernetes" class="page-section">
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <div class="card-title">Nodes <span class="source-tag" id="k8s-src-tag" style="margin-left:8px;">—</span></div>
+        <button class="btn btn-ghost btn-sm" onclick="loadK8sPage()">↻ Refresh</button>
+      </div>
+      <div id="k8s-nodes-list"><div class="empty-state">Loading nodes...</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Pods</div></div>
+      <div id="k8s-pods-list"><div class="empty-state">Loading pods...</div></div>
+    </div>
+  </div>
+
+  <!-- SERVICES PAGE -->
+  <div id="page-services" class="page-section">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Microservices</div><button class="btn btn-ghost btn-sm" onclick="renderServices()">↻ Refresh</button></div>
+      <div id="services-list"></div>
+    </div>
+  </div>
+
+  <!-- METRICS PAGE -->
+  <div id="page-metrics" class="page-section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Cluster Metrics <span class="source-tag" id="metrics-src-tag" style="margin-left:8px;">—</span></div>
+        <button class="btn btn-ghost btn-sm" onclick="loadMetrics()">↻ Refresh</button>
+      </div>
+      <div id="metrics-list"><div class="empty-state">Loading metrics...</div></div>
+    </div>
+  </div>
+
+  <!-- LOGS PAGE -->
+  <div id="page-logs" class="page-section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Live Logs</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="clearLogs()">Clear</button>
+          <button class="btn btn-primary btn-sm" id="live-btn" onclick="toggleLiveLogs()">⏸ Pause</button>
+        </div>
+      </div>
+      <div class="log-viewer" id="log-viewer"></div>
+    </div>
+  </div>
+
+  <!-- ALERTS PAGE -->
+  <div id="page-alerts" class="page-section">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Alerts <span class="source-tag" id="alerts-page-src" style="margin-left:8px;">—</span></div>
+        <button class="btn btn-danger btn-sm" onclick="silenceAll()">Silence All</button>
+      </div>
+      <div id="alerts-full"><div class="empty-state">Loading alerts...</div></div>
+    </div>
+  </div>
+
+  <!-- VAULT PAGE -->
+  <div id="page-vault" class="page-section">
+    <div class="card">
+      <div class="card-header"><div class="card-title">🔐 HashiCorp Vault</div><button class="btn btn-primary btn-sm" onclick="showToast('Vault sealed successfully','success')">Seal Vault</button></div>
+      <div id="vault-list"></div>
+    </div>
+  </div>
+
+  <!-- CVE PAGE -->
+  <div id="page-cve" class="page-section">
+    <div class="card">
+      <div class="card-header"><div class="card-title">CVE Scan — Trivy</div><button class="btn btn-primary btn-sm" onclick="runScan()">↻ Rescan</button></div>
+      <div id="cve-list"></div>
+    </div>
+  </div>
+
+  <!-- AI COPILOT PAGE -->
+  <div id="page-copilot" class="page-section">
+    <div class="main-grid">
+      <div class="card span2">
+        <div class="card-header">
+          <div class="card-title">🤖 AI Copilot</div>
+          <div id="copilot-tag-full" style="font-size:9px;font-family:'Space Mono',monospace;padding:3px 8px;border-radius:4px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);color:#c4b5fd;">Offline</div>
+        </div>
+        <div class="ai-chat" id="full-chat" style="max-height:420px;"></div>
+        <div class="ai-input-area">
+          <input class="ai-input" id="full-input" type="text" placeholder="Ask about your cluster..." onkeydown="if(event.key==='Enter')sendChat('full')"/>
+          <button class="btn btn-primary" onclick="sendChat('full')" style="padding:8px 14px;">→</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Quick Commands</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('Show all failed pods and recommended fix')">→ Show failed pods</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('What is the current cluster CPU and memory usage?')">→ Resource usage</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('List all critical CVEs and suggest remediation steps')">→ CVE remediation</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('Suggest optimal HPA settings for ml-inference service')">→ HPA recommendation</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('Generate an incident runbook for OOMKill events')">→ Generate runbook</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('Summarize overall cluster health and active alerts')">→ Health summary</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTO-HEAL PAGE -->
+  <div id="page-autoheal" class="page-section">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Auto-Healed</div><div class="stat-value cyan">148</div><div class="stat-change">↑ this month</div><div class="stat-icon">⚡</div></div>
+      <div class="stat-card green"><div class="stat-label">Avg Heal Time</div><div class="stat-value green">17s</div><div class="stat-change">↓ 60% vs manual</div><div class="stat-icon">⏱</div></div>
+      <div class="stat-card purple"><div class="stat-label">Success Rate</div><div class="stat-value purple">96%</div><div class="stat-change">↑ 2% this month</div><div class="stat-icon">✅</div></div>
+      <div class="stat-card warn"><div class="stat-label">Active Rules</div><div class="stat-value warn">23</div><div class="stat-change">4 namespaces</div><div class="stat-icon">📋</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Auto-Heal Rules</div><button class="btn btn-primary btn-sm" onclick="showToast('Rule wizard coming soon','info')">+ Add Rule</button></div>
+      <div id="heal-rules"></div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- DEPLOY MODAL -->
+<div class="modal-overlay" id="deploy-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('deploy-modal')">✕</button>
+    <div class="modal-title">Deploy New Application</div>
+    <div class="modal-sub">Triggers kubectl apply via FastAPI backend</div>
+    <div class="form-row"><label class="form-label">Service Name</label><input class="form-input" id="dep-name" placeholder="e.g. payment-service"/></div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Version</label><input class="form-input" id="dep-ver" placeholder="v2.4.1"/></div>
+      <div class="form-row"><label class="form-label">Replicas</label><input class="form-input" id="dep-rep" type="number" value="2" min="1" max="20"/></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label class="form-label">Environment</label><select class="form-select" id="dep-env"><option>production</option><option>staging</option><option>dev</option></select></div>
+      <div class="form-row"><label class="form-label">Namespace</label><select class="form-select" id="dep-ns"><option>default</option><option>payments</option><option>auth</option><option>ml-inference</option></select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('deploy-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitDeploy()">🚀 Deploy</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toasts"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+let BASE = 'http://localhost:8000';
+let backendOnline = false;
+let liveLogsOn = true, logInterval, refreshInterval;
+let clusterState = {};
+let allDeployments = [], allAlerts = [], deployFilter = 'all';
+
+// ─── MOCK DATA ────────────────────────────────────────────────────────────────
+const MOCK = {
+  metrics: {cpu_usage:64,memory_usage:71,pod_count:247,node_count:12,request_rate:4820,error_rate:0.18},
+  pods: [
+    {name:'payment-service-7d9f4',namespace:'default',status:'Running',node:'node-01',restarts:0,age:'2d'},
+    {name:'auth-service-2b3c1',namespace:'default',status:'Running',node:'node-02',restarts:3,age:'1d'},
+    {name:'ml-inference-9a1b2',namespace:'default',status:'Failed',node:'node-03',restarts:7,age:'4h'},
+    {name:'api-gateway-4c5d6',namespace:'default',status:'Running',node:'node-01',restarts:0,age:'3d'},
+    {name:'notification-svc-8e7f',namespace:'default',status:'Pending',node:'node-04',restarts:1,age:'1d'},
+  ],
+  nodes: [
+    {name:'node-01',status:'Ready',version:'v1.29.0'},{name:'node-02',status:'Ready',version:'v1.29.0'},
+    {name:'node-03',status:'NotReady',version:'v1.29.0'},{name:'node-04',status:'Ready',version:'v1.29.0'},
+  ],
+  deployments: [
+    {name:'payment-service',namespace:'default',replicas:2,ready:2,image:'payment-service:v2.4.1',updated:'2024-01-15'},
+    {name:'auth-service',namespace:'default',replicas:3,ready:2,image:'auth-service:v1.9.0',updated:'2024-01-14'},
+    {name:'ml-inference',namespace:'default',replicas:1,ready:0,image:'ml-inference:v0.8.3',updated:'2024-01-14'},
+    {name:'api-gateway',namespace:'default',replicas:2,ready:2,image:'api-gateway:v3.1.2',updated:'2024-01-13'},
+    {name:'notification-svc',namespace:'default',replicas:2,ready:1,image:'notification-svc:v1.2.0',updated:'2024-01-12'},
+  ],
+  alerts: [
+    {name:'HighMemoryUsage',sev:'critical',desc:'ml-inference · 94% · node-3',status:'firing',time:'2 min ago'},
+    {name:'PodRestartLoop',sev:'warning',desc:'auth-service · 3 restarts',status:'firing',time:'8 min ago'},
+    {name:'CVEDetected',sev:'warning',desc:'nginx:1.24 · HIGH severity',status:'firing',time:'1 hr ago'},
+    {name:'CertExpiry',sev:'info',desc:'api.prod.internal · TLS · 14 days',status:'firing',time:'3 hrs ago'},
+  ],
+};
+
+const MOCK_CVE = [
+  {id:'CVE-2024-1182',pkg:'nginx:1.24',sev:'CRITICAL',score:9.8,status:'open'},
+  {id:'CVE-2024-3094',pkg:'libssl:3.0.2',sev:'CRITICAL',score:9.1,status:'open'},
+  {id:'CVE-2023-44487',pkg:'golang:1.20',sev:'HIGH',score:7.5,status:'patched'},
+  {id:'CVE-2024-2961',pkg:'glibc:2.35',sev:'HIGH',score:8.6,status:'open'},
+];
+
+const MOCK_VAULT = [
+  {path:'secret/prod/db-password',type:'KV',rotated:'2d ago',status:'active'},
+  {path:'secret/prod/api-keys/openai',type:'KV',rotated:'5d ago',status:'active'},
+  {path:'pki/prod/tls-cert',type:'PKI',rotated:'14d ago',status:'expiring'},
+  {path:'aws/creds/eks-role',type:'Dynamic',rotated:'1h ago',status:'active'},
+];
+
+const MOCK_SERVICES = [
+  {name:'payment-service',lang:'Node.js',pods:2,cpu:'12%',mem:'340Mi',status:'healthy',version:'v2.4.1'},
+  {name:'auth-service',lang:'Python',pods:3,cpu:'8%',mem:'220Mi',status:'degraded',version:'v1.9.0'},
+  {name:'ml-inference',lang:'Python',pods:1,cpu:'68%',mem:'940Mi',status:'unhealthy',version:'v0.8.3'},
+  {name:'api-gateway',lang:'Go',pods:2,cpu:'22%',mem:'180Mi',status:'healthy',version:'v3.1.2'},
+  {name:'notification-svc',lang:'Java',pods:2,cpu:'5%',mem:'512Mi',status:'healthy',version:'v1.2.0'},
+];
+
+const MOCK_HEAL = [
+  {trigger:'OOMKill',action:'Increase memory limit 2x + HPA scale-out',success:98,runs:48},
+  {trigger:'CrashLoopBackOff >3',action:'Auto-restart + notify PagerDuty',success:92,runs:31},
+  {trigger:'CPU >90% for 5min',action:'HPA scale-out + alert Slack',success:100,runs:22},
+  {trigger:'Node disk >85%',action:'PV cleanup + S3 offload',success:95,runs:14},
+  {trigger:'Deployment failure',action:'Auto-rollback to previous revision',success:97,runs:19},
+];
+
+// ─── API HELPER ───────────────────────────────────────────────────────────────
+async function api(path, opts={}) {
+  BASE = document.getElementById('backend-url').value.replace(/\/$/,'');
+  const res = await fetch(BASE + path, {headers:{'Content-Type':'application/json'}, ...opts});
+  if (!res.ok) throw new Error(`${res.status}`);
+  return res.json();
+}
+
+// ─── PING BACKEND ─────────────────────────────────────────────────────────────
+async function pingBackend() {
+  const dot = document.getElementById('backend-dot');
+  const stat = document.getElementById('backend-status');
+  try {
+    await api('/health');
+    backendOnline = true;
+    dot.className = 'backend-dot ok';
+    stat.textContent = '✓ Connected — live data active';
+    stat.style.color = 'var(--accent3)';
+    document.getElementById('sys-pill').className = 'status-pill';
+    document.getElementById('sys-pulse').className = 'pulse';
+    document.getElementById('sys-status').textContent = 'All Systems Operational';
+    document.getElementById('copilot-tag-mini').textContent = 'Live · Groq API';
+    document.getElementById('copilot-tag-full').textContent = 'Live · Groq API';
+    showToast('✅ Backend connected — loading live data', 'success');
+    loadAll();
+  } catch(e) {
+    backendOnline = false;
+    dot.className = 'backend-dot err';
+    stat.textContent = '✗ Offline — using mock data';
+    stat.style.color = 'var(--danger)';
+    document.getElementById('sys-pill').className = 'status-pill error';
+    document.getElementById('sys-pulse').className = 'pulse red';
+    document.getElementById('sys-status').textContent = 'Mock Mode — Backend Offline';
+    loadAllMock();
+  }
+}
+
+function srcTag(live) {
+  return `<span class="source-tag ${live?'live':'mock'}">${live?'🟢 LIVE':'🔘 MOCK'}</span>`;
+}
+
+// ─── LOAD ALL ─────────────────────────────────────────────────────────────────
+async function loadAll() {
+  await Promise.all([loadMetrics(), loadDeployments(), loadAlerts(), loadNodes()]);
+  renderPipeline(); renderDeployChart();
+  renderCVE(MOCK_CVE); renderVault(MOCK_VAULT);
+  renderServices(); renderHealRules();
+}
+
+function loadAllMock() {
+  renderMetrics(MOCK.metrics, false);
+  renderDeployments(MOCK.deployments, false);
+  renderAlerts(MOCK.alerts, false);
+  renderNodes(MOCK.nodes, false);
+  renderPipeline(); renderDeployChart();
+  renderCVE(MOCK_CVE); renderVault(MOCK_VAULT);
+  renderServices(); renderHealRules();
+}
+
+async function refreshAll() {
+  showToast('↻ Syncing...', 'info');
+  await pingBackend();
+}
+
+// ─── METRICS ─────────────────────────────────────────────────────────────────
+async function loadMetrics() {
+  try {
+    const d = backendOnline ? await api('/api/metrics/cluster') : MOCK.metrics;
+    renderMetrics(d, backendOnline);
+  } catch { renderMetrics(MOCK.metrics, false); }
+}
+
+function renderMetrics(d, live) {
+  setText('stat-cpu',  `${Math.round(d.cpu_usage||0)}%`);
+  setText('stat-cpu-sub', 'cluster average');
+  setText('stat-pods', d.pod_count||'—');
+  setText('stat-pods-sub', `across ${d.node_count||'—'} nodes`);
+  setText('stat-mem',  `${Math.round(d.memory_usage||0)}%`);
+  setText('stat-mem-sub', 'cluster average');
+  setText('stat-err',  `${d.error_rate||0}%`);
+  setText('stat-err-sub', '5xx error rate');
+  setHTML('metrics-src-tag', srcTag(live));
+  const rows = [
+    {name:'CPU Usage',       val:`${Math.round(d.cpu_usage||0)}%`,      good:d.cpu_usage<80},
+    {name:'Memory Usage',    val:`${Math.round(d.memory_usage||0)}%`,   good:d.memory_usage<80},
+    {name:'Pod Count',       val:d.pod_count||'—',                      good:true},
+    {name:'Node Count',      val:d.node_count||'—',                     good:true},
+    {name:'Request Rate',    val:`${d.request_rate||0} RPS`,            good:true},
+    {name:'Error Rate (5xx)',val:`${d.error_rate||0}%`,                 good:d.error_rate<1},
+  ];
+  setHTML('metrics-list', rows.map(r=>`
+    <div class="metric-row">
+      <span class="metric-name">${r.name}</span>
+      <span class="metric-val" style="color:var(--${r.good?'accent3':'danger'})">${r.val}</span>
+    </div>`).join(''));
+  clusterState = {...clusterState, ...d};
+}
+
+// ─── DEPLOYMENTS ─────────────────────────────────────────────────────────────
+async function loadDeployments() {
+  try {
+    const d = backendOnline ? await api('/api/k8s/deployments') : MOCK.deployments;
+    allDeployments = d;
+    renderDeployments(d, backendOnline);
+  } catch { allDeployments = MOCK.deployments; renderDeployments(MOCK.deployments, false); }
+}
+
+function deployStatus(d) {
+  const ready = d.ready ?? d.replicas;
+  if (ready === d.replicas) return 'healthy';
+  if (ready === 0) return 'failed';
+  return 'degraded';
+}
+
+function renderDeployItem(d) {
+  const s = deployStatus(d);
+  const ready = d.ready ?? d.replicas;
+  const icons = {healthy:'✅', degraded:'🔄', failed:'❌'};
+  const labels = {healthy:'HEALTHY', degraded:'DEGRADED', failed:'FAILED'};
+  const cls = {healthy:'success', degraded:'running', failed:'failed'};
+  return `<div class="deploy-item">
+    <div class="deploy-icon ${cls[s]}">${icons[s]}</div>
+    <div class="deploy-info">
+      <div class="deploy-name">${d.name}</div>
+      <div class="deploy-meta">${d.namespace} · ${d.image||'—'} · ${ready}/${d.replicas} ready</div>
+    </div>
+    <div class="deploy-status ${cls[s]}">${labels[s]}</div>
+  </div>`;
+}
+
+function renderDeployments(data, live) {
+  const tag = srcTag(live);
+  setHTML('deploy-src-tag', tag); setHTML('dep-page-tag', tag);
+  setText('deploy-badge', data.length);
+  clusterState.deployments = data;
+  setHTML('recent-deploys', data.slice(0,5).map(renderDeployItem).join('') || '<div class="empty-state">No deployments found</div>');
+  renderFilteredDeploys();
+}
+
+function renderFilteredDeploys() {
+  const f = deployFilter === 'all' ? allDeployments : allDeployments.filter(d => deployStatus(d) === deployFilter);
+  setHTML('all-deploys', f.map(renderDeployItem).join('') || '<div class="empty-state">No deployments in this category</div>');
+}
+
+function filterDeploys(filter, el) {
+  deployFilter = filter;
+  document.querySelectorAll('#page-deployments .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderFilteredDeploys();
+}
+
+// ─── ALERTS ───────────────────────────────────────────────────────────────────
+async function loadAlerts() {
+  try {
+    const d = backendOnline ? await api('/api/alerts') : MOCK.alerts;
+    allAlerts = d.length ? d : MOCK.alerts;
+    renderAlerts(allAlerts, backendOnline && d.length > 0);
+  } catch { allAlerts = MOCK.alerts; renderAlerts(MOCK.alerts, false); }
+}
+
+function renderAlerts(data, live) {
+  setHTML('alert-src-tag', srcTag(live));
+  setHTML('alerts-page-src', srcTag(live));
+  setText('alert-badge', data.length);
+  clusterState.alerts = data;
+  const html = data.map(a => `
+    <div class="alert-item">
+      <div class="alert-dot ${a.sev||'info'}"></div>
+      <div style="flex:1">
+        <div class="alert-title">${a.name}</div>
+        <div class="alert-desc">${a.desc||''}</div>
+        <div class="alert-time">${a.time||''}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button class="btn btn-ghost btn-sm" onclick="this.textContent='Ack\'d';this.disabled=true;showToast('Alert acknowledged','success')">Ack</button>
+        <button class="btn btn-danger btn-sm" onclick="this.closest('.alert-item').remove();showToast('Alert silenced','info')">Silence</button>
+      </div>
+    </div>`).join('');
+  setHTML('overview-alerts', html || '<div class="empty-state">No active alerts 🎉</div>');
+  setHTML('alerts-full',     html || '<div class="empty-state">No active alerts 🎉</div>');
+}
+
+function silenceAll() {
+  showToast('🔕 All alerts silenced for 1 hour', 'info');
+  setText('alert-badge', '0');
+  const empty = '<div class="empty-state">No active alerts 🎉</div>';
+  setHTML('overview-alerts', empty); setHTML('alerts-full', empty);
+}
+
+// ─── NODES ────────────────────────────────────────────────────────────────────
+async function loadNodes() {
+  try {
+    const d = backendOnline ? await api('/api/k8s/nodes') : MOCK.nodes;
+    renderNodes(d, backendOnline);
+  } catch { renderNodes(MOCK.nodes, false); }
+}
+
+function renderNodes(data, live) {
+  setHTML('node-src-tag', srcTag(live));
+  setHTML('k8s-src-tag',  srcTag(live));
+  const cpus = [42,38,71,29,44,18,55,32];
+  const mems = [61,78,94,55,67,43,72,48];
+  setHTML('nodes-grid', data.slice(0,6).map((n,i) => {
+    const cpu=cpus[i]||35, mem=mems[i]||50;
+    const cc=cpu>70?'warn':'green', mc=mem>85?'danger':mem>70?'warn':'cyan';
+    return `<div class="node-card">
+      <div class="node-name">${n.name}${n.status==='NotReady'?' ⚠':''}</div>
+      <div class="node-stat"><span class="node-stat-label">CPU</span><span class="node-stat-value" style="color:var(--${cpu>70?'warn':'accent3'})">${cpu}%</span></div>
+      <div class="progress-bar"><div class="progress-fill ${cc}" style="width:${cpu}%"></div></div>
+      <div class="node-stat" style="margin-top:6px"><span class="node-stat-label">MEM</span><span class="node-stat-value" style="color:var(--${mem>85?'danger':mem>70?'warn':'accent'})">${mem}%</span></div>
+      <div class="progress-bar"><div class="progress-fill ${mc}" style="width:${mem}%"></div></div>
+    </div>`;
+  }).join(''));
+  setHTML('k8s-nodes-list', data.map(n=>`
+    <div class="metric-row">
+      <div><div style="font-weight:700;font-family:'Space Mono',monospace;font-size:12px;">${n.name}</div>
+      <div class="metric-name">kubelet: ${n.version||'—'}</div></div>
+      <span class="sec-val ${n.status==='Ready'?'good':'bad'}">${n.status}</span>
+    </div>`).join(''));
+}
+
+async function loadK8sPage() {
+  showToast('↻ Refreshing cluster data...', 'info');
+  await loadNodes();
+  try {
+    const pods = backendOnline ? await api('/api/k8s/pods') : MOCK.pods;
+    renderPods(pods);
+  } catch { renderPods(MOCK.pods); }
+  showToast('✅ Cluster data refreshed', 'success');
+}
+
+function renderPods(pods) {
+  setHTML('k8s-pods-list', pods.map(p=>`
+    <div class="metric-row">
+      <div>
+        <div style="font-weight:700;font-size:12px;">${p.name}</div>
+        <div class="metric-name">${p.namespace} · node: ${p.node} · restarts: ${p.restarts}</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span class="sec-val ${p.status==='Running'?'good':p.status==='Failed'?'bad':'warn'}">${p.status}</span>
+        ${p.status==='Failed'||p.restarts>3?`<button class="btn btn-primary btn-sm" onclick="healPod('${p.name}','${p.namespace}')">Heal</button>`:''}
+      </div>
+    </div>`).join('') || '<div class="empty-state">No pods found</div>');
+}
+
+async function healPod(name, ns) {
+  showToast(`⚡ Healing ${name}...`, 'info');
+  try {
+    await api('/api/k8s/restart', {method:'POST', body: JSON.stringify({pod_name:name,namespace:ns,action:'restart'})});
+    showToast(`✅ ${name} restarted`, 'success');
+  } catch {
+    setTimeout(()=>showToast(`✅ ${name} restart simulated (backend offline)`, 'info'), 1000);
+  }
+}
+
+// ─── SERVICES ────────────────────────────────────────────────────────────────
+function renderServices() {
+  const sc = {healthy:'good', degraded:'warn', unhealthy:'bad'};
+  setHTML('services-list', MOCK_SERVICES.map(s=>`
+    <div class="metric-row">
+      <div>
+        <div style="font-weight:700;">${s.name}</div>
+        <div class="metric-name">${s.lang} · ${s.pods} pods · ${s.version}</div>
+      </div>
+      <div style="display:flex;gap:20px;align-items:center;">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">CPU ${s.cpu}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">MEM ${s.mem}</span>
+        <span class="sec-val ${sc[s.status]}">${s.status.toUpperCase()}</span>
+      </div>
+    </div>`).join(''));
+}
+
+// ─── PIPELINE ────────────────────────────────────────────────────────────────
+function renderPipeline() {
+  const steps = [
+    {name:'Build',s:'done'},{name:'Unit Tests',s:'done'},{name:'Trivy Scan',s:'done'},
+    {name:'Push ECR',s:'done'},{name:'Staging',s:'running'},{name:'Sanity Test',s:''},
+    {name:'ArgoCD Sync',s:''},{name:'Prod Deploy',s:''},
+  ];
+  setHTML('pipeline-view', steps.map(s=>`
+    <div class="pipeline-step ${s.s}">
+      <div class="step-circle ${s.s}">${s.s==='done'?'✓':'◎'}</div>
+      <div class="step-name ${s.s}">${s.name}</div>
+    </div>`).join(''));
+}
+
+function renderDeployChart() {
+  const bars=[{h:40,l:'Mon'},{h:55,l:'Tue'},{h:35,l:'Wed'},{h:68,l:'Thu'},{h:48,l:'Fri'},{h:22,l:'Sat'},{h:18,l:'Sun'}];
+  setHTML('deploy-chart', bars.map((b,i)=>`<div class="bar-wrap"><div class="bar ${i<5?'cyan':'green'}" style="height:${b.h}px"></div><div class="bar-label">${b.l}</div></div>`).join(''));
+}
+
+// ─── CVE & VAULT ──────────────────────────────────────────────────────────────
+function renderCVE(data) {
+  const crit = data.filter(c=>c.sev==='CRITICAL'&&c.status==='open').length;
+  const high  = data.filter(c=>c.sev==='HIGH'&&c.status==='open').length;
+  setText('crit-cve', crit); setText('high-cve', high);
+  const score = Math.max(0, 100 - crit*10 - high*3);
+  setText('sec-score', score);
+  document.getElementById('sec-ring').style.strokeDashoffset = 220 - (220*score/100);
+  const sc = {CRITICAL:'bad',HIGH:'warn',MEDIUM:''};
+  setHTML('cve-list', data.map(c=>`
+    <div class="metric-row">
+      <div>
+        <div style="font-weight:700;font-size:12px;font-family:'Space Mono',monospace;">${c.id}</div>
+        <div class="metric-name">${c.pkg} · Score: ${c.score}</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span class="sec-val ${sc[c.sev]||''}">${c.sev}</span>
+        <span class="deploy-status ${c.status==='patched'?'success':'failed'}" style="font-size:10px;">${c.status.toUpperCase()}</span>
+        ${c.status==='open'?`<button class="btn btn-primary btn-sm" onclick="showToast('Patching ${c.id}...','info');this.textContent='Patching...'">Patch</button>`:''}
+      </div>
+    </div>`).join(''));
+}
+
+function renderVault(data) {
+  setHTML('vault-list', data.map(v=>`
+    <div class="metric-row">
+      <div>
+        <div style="font-weight:700;font-size:12px;font-family:'Space Mono',monospace;">${v.path}</div>
+        <div class="metric-name">Type: ${v.type} · Rotated: ${v.rotated}</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span class="sec-val ${v.status==='active'?'good':'warn'}">${v.status.toUpperCase()}</span>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('Rotating ${v.path}...','info')">Rotate</button>
+      </div>
+    </div>`).join(''));
+}
+
+function renderHealRules() {
+  setHTML('heal-rules', MOCK_HEAL.map(r=>`
+    <div class="metric-row">
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:12px;">Trigger: ${r.trigger}</div>
+        <div class="metric-name">Action: ${r.action}</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">${r.runs} runs</span>
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent3);">${r.success}% success</span>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('Rule test triggered','info')">Test</button>
+      </div>
+    </div>`).join(''));
+}
+
+function runScan() {
+  showToast('🔍 Trivy scan initiated...', 'info');
+  setTimeout(()=>{ showToast('⚠ Scan complete: 2 critical, 2 high CVEs', 'error'); renderCVE(MOCK_CVE); }, 2500);
+}
+
+// ─── LOGS ─────────────────────────────────────────────────────────────────────
+const LOG_LINES = [
+  ['INFO','api-gateway',   'POST /v1/payments 200 OK 42ms'],
+  ['INFO','auth-service',  'Token validated user_id: usr_9f2k3j'],
+  ['WARN','ml-inference',  'Memory at 87%, approaching limit 512Mi'],
+  ['INFO','payment-svc',   'Transaction txn_8a2b processed $1,240'],
+  ['ERR', 'ml-inference',  'OOMKilled: exceeded memory limit 512Mi'],
+  ['INFO','flux-system',   'Reconciliation ok: payment-service v2.4.1'],
+  ['INFO','argocd',        'Sync complete: api-gateway → prod'],
+  ['WARN','auth-service',  'Pod restart detected (count: 3)'],
+  ['INFO','prometheus',    'Scraping 212/212 targets healthy'],
+  ['OK',  'auto-heal',     'Memory patched: ml-inference → 1Gi ✅'],
+];
+
+function initLogs() {
+  const lv = document.getElementById('log-viewer');
+  lv.innerHTML = LOG_LINES.map(l => logLine(l)).join('');
+  lv.scrollTop = lv.scrollHeight;
+}
+
+function logLine(l) {
+  const cls = {INFO:'lvl-info',WARN:'lvl-warn',ERR:'lvl-err',OK:'lvl-ok'}[l[0]]||'lvl-info';
+  const t = new Date().toTimeString().slice(0,8);
+  return `<div class="log-line"><span class="ts">${t}</span> [<span class="${cls}">${l[0].padEnd(4)}</span>] <span style="color:var(--accent)">${l[1].padEnd(14)}</span> ${l[2]}</div>`;
+}
+
+function startLiveLogs() { if(!logInterval) logInterval=setInterval(appendLog, 2500); }
+function stopLiveLogs()  { clearInterval(logInterval); logInterval=null; }
+
+function appendLog() {
+  if(!liveLogsOn) return;
+  const lv = document.getElementById('log-viewer');
+  if(!lv) return;
+  const l = LOG_LINES[Math.floor(Math.random()*LOG_LINES.length)];
+  lv.innerHTML += logLine(l);
+  lv.scrollTop = lv.scrollHeight;
+}
+
+function clearLogs()       { setHTML('log-viewer',''); showToast('Logs cleared','info'); }
+function toggleLiveLogs()  { liveLogsOn=!liveLogsOn; document.getElementById('live-btn').textContent=liveLogsOn?'⏸ Pause':'▶ Resume'; }
+
+// ─── AI COPILOT ───────────────────────────────────────────────────────────────
+const chatHistory = { mini:[], full:[] };
+
+function initChats() {
+  const welcome = [{role:'ai', text:'Hello! I am your AI Copilot.\n\nI have access to live cluster state. Ask me anything — failed pods, resource usage, CVE remediation, scaling recommendations, or runbook generation.', time:now()}];
+  chatHistory.mini = [...welcome];
+  chatHistory.full = [...welcome];
+  renderChat('mini'); renderChat('full');
+}
+
+function renderChat(id) {
+  const el = document.getElementById(id==='mini'?'mini-chat':'full-chat');
+  el.innerHTML = chatHistory[id].map(m=>`
+    <div class="chat-msg">
+      <div class="chat-avatar ${m.role}">${m.role==='ai'?'🤖':m.role==='user'?'👤':'🔔'}</div>
+      <div style="flex:1">
+        <div class="chat-bubble ${m.role==='ai'?'ai-bubble':m.role==='user'?'user-bubble':''}">${m.text}</div>
+        <div class="chat-time">${m.time}</div>
+      </div>
+    </div>`).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendChat(id) {
+  const inp = document.getElementById(id==='mini'?'mini-input':'full-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  chatHistory[id].push({role:'user', text, time:now()});
+  renderChat(id);
+  showTyping(id);
+  try {
+    let reply;
+    if(backendOnline) {
+      const r = await api('/api/copilot/chat', {method:'POST', body: JSON.stringify({message:text, context:clusterState})});
+      reply = r.reply;
+    } else {
+      reply = await callClaudeDirect(text);
+    }
+    removeTyping(id);
+    chatHistory[id].push({role:'ai', text:reply, time:now()});
+  } catch(e) {
+    removeTyping(id);
+    chatHistory[id].push({role:'ai', text:`Error: ${e.message}\n\nMake sure your backend is running and GEMINI_API_KEY is set in .env`, time:now()});
+  }
+  renderChat(id);
+}
+
+
+async function callClaudeDirect(message) {
+  // Fallback: call Groq directly when backend is offline
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer YOUR_GROQ_API_KEY_HERE'  // paste your key
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 1000,
+      messages: [
+        {
+          role: 'system',
+          content: `You are a DevOps AI Copilot. Cluster state: ${JSON.stringify(clusterState)}. Be concise and technical.`
+        },
+        {
+          role: 'user',
+          content: message
+        }
+      ]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.choices[0].message.content;
+}
+
+function showTyping(id) {
+  const el = document.getElementById(id==='mini'?'mini-chat':'full-chat');
+  const div = document.createElement('div');
+  div.className='chat-msg'; div.id=`typing-${id}`;
+  div.innerHTML=`<div class="chat-avatar ai">🤖</div><div><div class="chat-bubble ai-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
+  el.appendChild(div); el.scrollTop=el.scrollHeight;
+}
+function removeTyping(id) { const t=document.getElementById(`typing-${id}`); if(t)t.remove(); }
+function quickCmd(cmd) { document.getElementById('full-input').value=cmd; sendChat('full'); }
+
+// ─── DEPLOY ───────────────────────────────────────────────────────────────────
+function openDeployModal() { document.getElementById('deploy-modal').classList.add('open'); }
+function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
+
+async function submitDeploy() {
+  const name      = document.getElementById('dep-name').value || 'new-service';
+  const version   = document.getElementById('dep-ver').value  || 'v1.0.0';
+  const replicas  = parseInt(document.getElementById('dep-rep').value) || 2;
+  const environment = document.getElementById('dep-env').value;
+  const namespace = document.getElementById('dep-ns').value;
+  closeModal('deploy-modal');
+  showToast(`🚀 Deploying ${name}:${version} → ${environment}`, 'info');
+  try {
+    await api('/api/deploy', {method:'POST', body: JSON.stringify({name,version,replicas,environment,namespace})});
+    showToast(`✅ ${name}:${version} deployed to ${namespace}`, 'success');
+  } catch {
+    setTimeout(()=>{
+      allDeployments.unshift({name,namespace,replicas,ready:replicas,image:`${name}:${version}`,updated:new Date().toISOString()});
+      renderFilteredDeploys();
+      showToast(`✅ ${name}:${version} simulated (backend offline)`, 'info');
+    }, 1000);
+  }
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+const PAGE_META = {
+  overview:    {title:'Platform Overview',      sub:'cluster: prod-eks-ap-south-1 · namespace: default'},
+  deployments: {title:'Deployments',            sub:'All deployments across environments'},
+  kubernetes:  {title:'Kubernetes',             sub:'Live cluster nodes and pods'},
+  services:    {title:'Microservices',          sub:'Service mesh · 5 active services'},
+  metrics:     {title:'Metrics',                sub:'Prometheus · Real-time cluster metrics'},
+  logs:        {title:'Live Logs',              sub:'ELK Stack · prod-eks-ap-south-1'},
+  alerts:      {title:'Alerts',                 sub:'Alertmanager · Live webhook feed'},
+  vault:       {title:'HashiCorp Vault',        sub:'Secrets management · 142 active secrets'},
+  cve:         {title:'CVE Scan',               sub:'Trivy · Container vulnerability scanning'},
+  copilot:     {title:'AI Copilot',             sub:'Claude API · Live cluster context'},
+  autoheal:    {title:'Auto-Heal Engine',       sub:'AI-driven incident remediation · 96% success'},
+};
+
+function navTo(page, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const m = PAGE_META[page];
+  if(m) { setText('page-title',m.title); setText('page-subtitle',m.sub); }
+  if(page==='logs') { initLogs(); startLiveLogs(); } else stopLiveLogs();
+  if(page==='kubernetes') loadK8sPage();
+  if(page==='metrics')    loadMetrics();
+  if(page==='alerts')     loadAlerts();
+}
+
+// ─── THEME ────────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const dark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', dark?'light':'dark');
+  document.getElementById('theme-btn').textContent = dark?'☀️ Light':'🌙 Dark';
+}
+
+// ─── TOASTS ───────────────────────────────────────────────────────────────────
+function showToast(msg, type='info') {
+  const c = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${{success:'✅',error:'⚠️',info:'ℹ️'}[type]}</span><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(()=>{ t.style.transition='all 0.3s'; t.style.opacity='0'; t.style.transform='translateX(40px)'; setTimeout(()=>t.remove(),300); }, 3500);
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function setText(id, val) { const el=document.getElementById(id); if(el) el.textContent=val; }
+function setHTML(id, val) { const el=document.getElementById(id); if(el) el.innerHTML=val; }
+function now()            { return new Date().toTimeString().slice(0,8); }
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+window.onload = () => {
+  initChats();
+  renderPipeline();
+  renderDeployChart();
+  renderCVE(MOCK_CVE);
+  renderVault(MOCK_VAULT);
+  renderServices();
+  renderHealRules();
+  pingBackend();
+  refreshInterval = setInterval(()=>{ if(backendOnline) loadAll(); }, 30000);
+};
+</script>
+</body>
+</html>
