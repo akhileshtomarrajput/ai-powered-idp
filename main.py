@@ -165,7 +165,7 @@ async def cluster_metrics():
     }
     results = {}
     auth = (PROMETHEUS_USERNAME, PROMETHEUS_PASSWORD) if PROMETHEUS_USERNAME else None
-async with httpx.AsyncClient(timeout=5, auth=auth) as client:
+    async with httpx.AsyncClient(timeout=5, auth=auth) as client:
         for key, query in queries.items():
             try:
                 r = await client.get(
@@ -182,7 +182,7 @@ async with httpx.AsyncClient(timeout=5, auth=auth) as client:
 @app.get("/api/metrics/nodes")
 async def node_metrics():
     auth = (PROMETHEUS_USERNAME, PROMETHEUS_PASSWORD) if PROMETHEUS_USERNAME else None
-async with httpx.AsyncClient(timeout=5, auth=auth) as client:
+    async with httpx.AsyncClient(timeout=5, auth=auth) as client:
         try:
             cpu_q = 'round(100 - (rate(node_cpu_seconds_total{mode="idle"}[5m]) * 100), 1)'
             mem_q = 'round((1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100, 1)'
@@ -384,7 +384,7 @@ async def call_groq(messages: list, max_tokens: int = 1000) -> str:
         "temperature": 0.7,
     }
 
-async with httpx.AsyncClient(timeout=30) as client:
+    async with httpx.AsyncClient(timeout=30) as client:
         r = await client.post(
             GROQ_URL,
             headers={
