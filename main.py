@@ -169,7 +169,7 @@ async def cluster_metrics():
         for key, query in queries.items():
             try:
                 r = await client.get(
-                    f"{PROMETHEUS_URL}/api/prom/api/v1/query",
+                    f"{PROMETHEUS_URL}/api/v1/query",
                     params={"query": query}
                 )
                 val = r.json()["data"]["result"]
@@ -186,8 +186,8 @@ async def node_metrics():
         try:
             cpu_q = 'round(100 - (rate(node_cpu_seconds_total{mode="idle"}[5m]) * 100), 1)'
             mem_q = 'round((1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100, 1)'
-            cpu_r = await client.get(f"{PROMETHEUS_URL}/api/prom/api/v1/query", params={"query": cpu_q})
-            mem_r = await client.get(f"{PROMETHEUS_URL}/api/prom/api/v1/query", params={"query": mem_q})
+            cpu_r = await client.get(f"{PROMETHEUS_URL}/api/v1/query", params={"query": cpu_q})
+            mem_r = await client.get(f"{PROMETHEUS_URL}/api/v1/query", params={"query": mem_q})
             return {
                 "cpu": cpu_r.json()["data"]["result"],
                 "memory": mem_r.json()["data"]["result"],
