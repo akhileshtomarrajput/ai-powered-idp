@@ -19,6 +19,12 @@ from typing import Optional
 from pathlib import Path
 from datetime import datetime
 import httpx
+def extract_value(resp):
+    try:
+        return float(respextract_value(resp))
+    except:
+        return 0
+
 import subprocess
 import json
 import os
