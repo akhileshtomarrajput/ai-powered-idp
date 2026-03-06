@@ -37,6 +37,8 @@ app.add_middleware(
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://localhost:9090")
+PROMETHEUS_USERNAME = os.getenv("PROMETHEUS_USERNAME", "")
+PROMETHEUS_PASSWORD = os.getenv("PROMETHEUS_PASSWORD", "")
 GROQ_API_KEY   = os.getenv("GROQ_API_KEY", "")
 GROQ_URL       = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL     = "llama-3.3-70b-versatile"
@@ -156,7 +158,8 @@ async def cluster_metrics():
         "error_rate":   'round(sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) * 100, 2)',
     }
     results = {}
-    async with httpx.AsyncClient(timeout=5) as client:
+    auth = (PROMETHEUS_USERNAME, PROMETHEUS_PASSWORD) if PROMETHEUS_USERNAME else None
+        async with httpx.AsyncClient(timeout=5, auth=auth) as client:
         for key, query in queries.items():
             try:
                 r = await client.get(
@@ -172,7 +175,8 @@ async def cluster_metrics():
 
 @app.get("/api/metrics/nodes")
 async def node_metrics():
-    async with httpx.AsyncClient(timeout=5) as client:
+    auth = (PROMETHEUS_USERNAME, PROMETHEUS_PASSWORD) if PROMETHEUS_USERNAME else None
+        async with httpx.AsyncClient(timeout=5, auth=auth) as client:
         try:
             cpu_q = 'round(100 - (rate(node_cpu_seconds_total{mode="idle"}[5m]) * 100), 1)'
             mem_q = 'round((1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100, 1)'
