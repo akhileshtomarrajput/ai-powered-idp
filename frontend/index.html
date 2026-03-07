@@ -1192,16 +1192,23 @@ async function submitDeploy() {
   const environment = document.getElementById('dep-env').value;
   const namespace = document.getElementById('dep-ns').value;
   closeModal('deploy-modal');
-  showToast(`🚀 Deploying ${name}:${version} → ${environment}`, 'info');
+  showToast(`🚀 Triggering CI/CD pipeline for ${name}:${version}...`, 'info');
+  
+  // Trigger real GitHub Actions pipeline
   try {
-    await api('/api/deploy', {method:'POST', body: JSON.stringify({name,version,replicas,environment,namespace})});
-    showToast(`✅ ${name}:${version} deployed to ${namespace}`, 'success');
-  } catch {
-    setTimeout(()=>{
-      allDeployments.unshift({name,namespace,replicas,ready:replicas,image:`${name}:${version}`,updated:new Date().toISOString()});
-      renderFilteredDeploys();
-      showToast(`✅ ${name}:${version} simulated (backend offline)`, 'info');
-    }, 1000);
+    const r = await api(`/api/cicd/trigger?service=${encodeURIComponent(name)}&image=${encodeURIComponent(version)}`, {method:'POST'});
+    if(r.status === 'triggered') {
+      showToast(`✅ Pipeline triggered for ${name}:${version} → ${environment}`, 'success');
+      // Update deployments list optimistically
+      allDeployments.unshift({name,namespace,replicas,ready:0,image:`${name}:${version}`,updated:new Date().toISOString()});
+      renderDeployments(allDeployments, backendOnline);
+      // Refresh pipeline runs after 3s
+      setTimeout(()=>{ loadCICDRuns(); navTo('overview', document.querySelector('.nav-item')); }, 3000);
+    } else {
+      showToast(`⚠ Pipeline error: ${r.error||'Unknown'}`, 'error');
+    }
+  } catch(e) {
+    showToast(`⚠ Could not trigger pipeline: ${e.message}`, 'error');
   }
 }
 
