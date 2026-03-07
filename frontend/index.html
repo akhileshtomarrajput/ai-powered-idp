@@ -29,30 +29,30 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 /* SIDEBAR */
 .sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;position:fixed;height:100vh;top:0;left:0;z-index:100;}
 .logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px;}
-.logo-text{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;}
-.logo-sub{font-size:10px;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace;}
+.logo-text{font-family:monospace;font-size:13px;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;}
+.logo-sub{font-size:10px;color:var(--muted);margin-top:2px;font-family:monospace;}
 .nav-section{padding:0 12px;margin-bottom:8px;}
-.nav-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:0 8px;margin-bottom:6px;font-family:'Space Mono',monospace;}
+.nav-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:0 8px;margin-bottom:6px;font-family:monospace;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);transition:all 0.2s;margin-bottom:2px;position:relative;border:1px solid transparent;}
 .nav-item:hover{background:var(--border);color:var(--text);}
 .nav-item.active{background:rgba(0,229,255,0.1);color:var(--accent);border-color:rgba(0,229,255,0.2);}
 .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--accent);border-radius:0 2px 2px 0;}
-.nav-badge{margin-left:auto;background:var(--danger);color:white;font-size:9px;font-family:'Space Mono',monospace;padding:2px 6px;border-radius:20px;font-weight:700;}
+.nav-badge{margin-left:auto;background:var(--danger);color:white;font-size:9px;font-family:monospace;padding:2px 6px;border-radius:20px;font-weight:700;}
 .nav-badge.green{background:var(--accent3);}
 .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
 .user-info{display:flex;align-items:center;gap:10px;}
 .user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:white;flex-shrink:0;}
 .user-name{font-size:12px;font-weight:700;}
-.user-role{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
+.user-role{font-size:10px;color:var(--muted);font-family:monospace;}
 
 /* MAIN */
 .main{margin-left:220px;flex:1;padding:28px 32px;animation:fadeIn 0.6s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
 .page-title{font-size:22px;font-weight:800;}
-.page-subtitle{font-size:12px;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace;}
+.page-subtitle{font-size:12px;color:var(--muted);margin-top:2px;font-family:monospace;}
 .topbar-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.status-pill{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:6px 14px;font-size:11px;font-family:'Space Mono',monospace;color:var(--accent3);font-weight:700;}
+.status-pill{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:6px 14px;font-size:11px;font-family:monospace;color:var(--accent3);font-weight:700;}
 .status-pill.error{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--danger);}
 .pulse{width:7px;height:7px;border-radius:50%;background:var(--accent3);animation:pulse 1.5s ease-in-out infinite;}
 .pulse.red{background:var(--danger);}
@@ -64,13 +64,13 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
 .btn-sm{padding:5px 12px;font-size:11px;}
 .btn-danger{background:var(--danger);color:white;}
-.theme-toggle{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer;font-size:11px;display:flex;align-items:center;gap:6px;color:var(--text);font-family:'Space Mono',monospace;font-weight:700;}
+.theme-toggle{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer;font-size:11px;display:flex;align-items:center;gap:6px;color:var(--text);font-family:monospace;font-weight:700;}
 .theme-toggle:hover{border-color:var(--accent);}
 
 /* CONFIG BAR */
 .config-bar{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.config-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Space Mono',monospace;white-space:nowrap;}
-.config-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--text);font-family:'Space Mono',monospace;outline:none;width:260px;}
+.config-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:monospace;white-space:nowrap;}
+.config-input{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:11px;color:var(--text);font-family:monospace;outline:none;width:260px;}
 .config-input:focus{border-color:var(--accent);}
 .backend-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;}
 .backend-dot.ok{background:var(--accent3);animation:pulse 2s infinite;}
@@ -84,13 +84,13 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .stat-card.green{--accent-color:var(--accent3);}
 .stat-card.purple{--accent-color:var(--accent2);}
 .stat-card.warn{--accent-color:var(--warn);}
-.stat-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;}
+.stat-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:monospace;margin-bottom:10px;}
 .stat-value{font-size:32px;font-weight:800;line-height:1;margin-bottom:6px;}
 .stat-value.cyan{color:var(--accent);}
 .stat-value.green{color:var(--accent3);}
 .stat-value.purple{color:var(--accent2);}
 .stat-value.warn{color:var(--warn);}
-.stat-change{font-size:11px;font-family:'Space Mono',monospace;color:var(--accent3);}
+.stat-change{font-size:11px;font-family:monospace;color:var(--accent3);}
 .stat-change.down{color:var(--danger);}
 .stat-icon{position:absolute;right:16px;top:16px;font-size:28px;opacity:0.15;}
 .skeleton{background:linear-gradient(90deg,var(--border) 25%,var(--bg3) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px;height:32px;width:80px;}
@@ -103,10 +103,10 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .card.span2{grid-column:span 2;}
 .card.span3{grid-column:span 3;}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.card-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;font-family:'Space Mono',monospace;}
-.card-action{font-size:10px;color:var(--accent);cursor:pointer;font-family:'Space Mono',monospace;border:1px solid rgba(0,229,255,0.3);padding:3px 10px;border-radius:4px;transition:all 0.2s;}
+.card-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;font-family:monospace;}
+.card-action{font-size:10px;color:var(--accent);cursor:pointer;font-family:monospace;border:1px solid rgba(0,229,255,0.3);padding:3px 10px;border-radius:4px;transition:all 0.2s;}
 .card-action:hover{background:rgba(0,229,255,0.1);}
-.source-tag{font-size:9px;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:4px;font-weight:700;}
+.source-tag{font-size:9px;font-family:monospace;padding:2px 8px;border-radius:4px;font-weight:700;}
 .source-tag.live{background:rgba(16,185,129,0.15);color:var(--accent3);border:1px solid rgba(16,185,129,0.3);}
 .source-tag.mock{background:rgba(100,116,139,0.15);color:var(--muted);border:1px solid rgba(100,116,139,0.3);}
 
@@ -120,8 +120,8 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .deploy-icon.pending{background:rgba(245,158,11,0.15);}
 .deploy-info{flex:1;}
 .deploy-name{font-size:13px;font-weight:700;}
-.deploy-meta{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
-.deploy-status{font-size:10px;font-family:'Space Mono',monospace;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.deploy-meta{font-size:10px;color:var(--muted);font-family:monospace;margin-top:2px;}
+.deploy-status{font-size:10px;font-family:monospace;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
 .deploy-status.success{background:rgba(16,185,129,0.15);color:var(--accent3);}
 .deploy-status.running{background:rgba(0,229,255,0.15);color:var(--accent);}
 .deploy-status.failed{background:rgba(239,68,68,0.15);color:var(--danger);}
@@ -135,8 +135,8 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .alert-dot.warning{background:var(--warn);}
 .alert-dot.info{background:var(--accent);animation:none;}
 .alert-title{font-size:12px;font-weight:700;margin-bottom:2px;}
-.alert-desc{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
-.alert-time{font-size:9px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
+.alert-desc{font-size:10px;color:var(--muted);font-family:monospace;}
+.alert-time{font-size:9px;color:var(--muted);margin-top:3px;font-family:monospace;}
 
 /* PIPELINE */
 .pipeline{display:flex;align-items:center;margin-bottom:8px;}
@@ -149,7 +149,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .step-circle.done{border-color:var(--accent3);background:rgba(16,185,129,0.1);}
 .step-circle.running{border-color:var(--accent);background:rgba(0,229,255,0.1);animation:glowPulse 2s infinite;}
 @keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,0.4);}50%{box-shadow:0 0 10px 3px rgba(0,229,255,0.2);}}
-.step-name{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;}
+.step-name{font-size:9px;color:var(--muted);font-family:monospace;}
 .step-name.done{color:var(--accent3);}
 .step-name.running{color:var(--accent);}
 
@@ -157,10 +157,10 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .nodes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 .node-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;transition:all 0.2s;}
 .node-card:hover{border-color:var(--accent3);}
-.node-name{font-size:11px;font-weight:700;font-family:'Space Mono',monospace;margin-bottom:8px;color:var(--accent);}
+.node-name{font-size:11px;font-weight:700;font-family:monospace;margin-bottom:8px;color:var(--accent);}
 .node-stat{display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px;}
 .node-stat-label{color:var(--muted);}
-.node-stat-value{font-family:'Space Mono',monospace;font-weight:700;}
+.node-stat-value{font-family:monospace;font-weight:700;}
 .progress-bar{height:3px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden;}
 .progress-fill{height:100%;border-radius:2px;transition:width 1s ease;}
 .progress-fill.cyan{background:var(--accent);}
@@ -174,10 +174,10 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .ring-chart svg{transform:rotate(-90deg);}
 .ring-bg{fill:none;stroke:var(--border);stroke-width:8;}
 .ring-fill{fill:none;stroke:var(--accent3);stroke-width:8;stroke-linecap:round;stroke-dasharray:220;stroke-dashoffset:22;}
-.ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--accent3);font-family:'Space Mono',monospace;}
+.ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--accent3);font-family:monospace;}
 .sec-item{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;}
-.sec-label{color:var(--muted);font-family:'Space Mono',monospace;}
-.sec-val{font-weight:700;font-family:'Space Mono',monospace;}
+.sec-label{color:var(--muted);font-family:monospace;}
+.sec-val{font-weight:700;font-family:monospace;}
 .sec-val.good{color:var(--accent3);}
 .sec-val.warn{color:var(--warn);}
 .sec-val.bad{color:var(--danger);}
@@ -188,7 +188,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .bar{width:100%;border-radius:3px 3px 0 0;min-height:4px;}
 .bar.cyan{background:linear-gradient(to top,var(--accent2),var(--accent));}
 .bar.green{background:linear-gradient(to top,#065f46,var(--accent3));}
-.bar-label{font-size:8px;color:var(--muted);font-family:'Space Mono',monospace;}
+.bar-label{font-size:8px;color:var(--muted);font-family:monospace;}
 
 /* AI CHAT */
 .ai-chat{display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto;}
@@ -199,13 +199,13 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .chat-avatar.ai{background:linear-gradient(135deg,var(--accent2),var(--accent));}
 .chat-avatar.sys{background:var(--border);}
 .chat-avatar.user{background:var(--accent3);}
-.chat-bubble{background:var(--bg3);border:1px solid var(--border);border-radius:0 8px 8px 8px;padding:8px 12px;font-size:11px;line-height:1.6;font-family:'Space Mono',monospace;flex:1;white-space:pre-wrap;}
+.chat-bubble{background:var(--bg3);border:1px solid var(--border);border-radius:0 8px 8px 8px;padding:8px 12px;font-size:11px;line-height:1.6;font-family:monospace;flex:1;white-space:pre-wrap;}
 .chat-bubble.ai-bubble{background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.3);color:#c4b5fd;}
 .chat-bubble.user-bubble{background:rgba(0,229,255,0.08);border-color:rgba(0,229,255,0.2);}
 [data-theme="light"] .chat-bubble.ai-bubble{color:var(--accent2);}
 .chat-time{font-size:9px;color:var(--muted);margin-top:3px;}
 .ai-input-area{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
-.ai-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text);font-family:'Space Mono',monospace;outline:none;}
+.ai-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text);font-family:monospace;outline:none;}
 .ai-input:focus{border-color:var(--accent2);}
 .ai-input::placeholder{color:var(--muted);}
 .typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:typingBounce 1.2s infinite;margin-right:3px;}
@@ -219,12 +219,12 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;width:90%;max-width:500px;transform:translateY(20px);transition:transform 0.3s;position:relative;}
 .modal-overlay.open .modal{transform:translateY(0);}
 .modal-title{font-size:16px;font-weight:800;margin-bottom:6px;}
-.modal-sub{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:20px;}
+.modal-sub{font-size:11px;color:var(--muted);font-family:monospace;margin-bottom:20px;}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:14px;padding:4px 10px;}
 .modal-close:hover{border-color:var(--danger);color:var(--danger);}
 .form-row{margin-bottom:14px;}
-.form-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:6px;display:block;}
-.form-input,.form-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--text);font-family:'Space Mono',monospace;outline:none;}
+.form-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:monospace;margin-bottom:6px;display:block;}
+.form-input,.form-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--text);font-family:monospace;outline:none;}
 .form-input:focus,.form-select:focus{border-color:var(--accent);}
 .form-select option{background:var(--bg2);}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
@@ -232,7 +232,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 
 /* TOAST */
 .toast-container{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:10px;}
-.toast{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:12px;font-family:'Space Mono',monospace;min-width:260px;animation:toastIn 0.3s ease;display:flex;align-items:center;gap:10px;}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:12px;font-family:monospace;min-width:260px;animation:toastIn 0.3s ease;display:flex;align-items:center;gap:10px;}
 .toast.success{border-color:var(--accent3);}
 .toast.error{border-color:var(--danger);}
 .toast.info{border-color:var(--accent);}
@@ -240,14 +240,14 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 
 /* TABS */
 .tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--bg3);border-radius:8px;padding:4px;}
-.tab{flex:1;padding:6px;text-align:center;font-size:10px;font-family:'Space Mono',monospace;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:6px;color:var(--muted);transition:all 0.2s;}
+.tab{flex:1;padding:6px;text-align:center;font-size:10px;font-family:monospace;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:6px;color:var(--muted);transition:all 0.2s;}
 .tab.active{background:var(--accent);color:#000;}
 
 .page-section{display:none;}
 .page-section.active{display:block;animation:fadeIn 0.4s ease;}
 
 /* LOG VIEWER */
-.log-viewer{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'Space Mono',monospace;font-size:11px;height:300px;overflow-y:auto;line-height:1.7;}
+.log-viewer{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:monospace;font-size:11px;height:300px;overflow-y:auto;line-height:1.7;}
 .log-line .ts{color:var(--muted);}
 .log-line .lvl-info{color:var(--accent);}
 .log-line .lvl-warn{color:var(--warn);}
@@ -256,9 +256,9 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 
 .metric-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;}
 .metric-row:last-child{border-bottom:none;}
-.metric-name{color:var(--muted);font-family:'Space Mono',monospace;}
-.metric-val{font-weight:700;font-family:'Space Mono',monospace;}
-.empty-state{text-align:center;padding:32px;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;}
+.metric-name{color:var(--muted);font-family:monospace;}
+.metric-val{font-weight:700;font-family:monospace;}
+.empty-state{text-align:center;padding:32px;color:var(--muted);font-family:monospace;font-size:12px;}
 
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
@@ -330,8 +330,8 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
     <span class="config-label">Backend URL</span>
     <input class="config-input" id="backend-url" value="https://ai-powered-idp.onrender.com" placeholder="https://ai-powered-idp.onrender.com" onchange="pingBackend()"/>
     <button class="btn btn-ghost btn-sm" onclick="pingBackend()">Test Connection</button>
-    <span id="backend-status" style="font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);">Not connected</span>
-    <span style="margin-left:auto;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);">🟢 Live = real backend &nbsp;|&nbsp; 🔘 Offline = mock data</span>
+    <span id="backend-status" style="font-size:10px;font-family:monospace;color:var(--muted);">Not connected</span>
+    <span style="margin-left:auto;font-size:10px;font-family:monospace;color:var(--muted);">🟢 Live = real backend &nbsp;|&nbsp; 🔘 Offline = mock data</span>
   </div>
 
   <!-- OVERVIEW PAGE -->
@@ -396,7 +396,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
       <div class="card">
         <div class="card-header">
           <div class="card-title">🤖 AI Copilot</div>
-          <div id="copilot-tag-mini" style="font-size:9px;color:var(--accent2);font-family:'Space Mono',monospace;background:rgba(124,58,237,0.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(124,58,237,0.3);">Offline</div>
+          <div id="copilot-tag-mini" style="font-size:9px;color:var(--accent2);font-family:monospace;background:rgba(124,58,237,0.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(124,58,237,0.3);">Offline</div>
         </div>
         <div class="ai-chat" id="mini-chat"></div>
         <div class="ai-input-area">
@@ -432,7 +432,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
             <div class="sec-item"><span class="sec-label">RBAC</span><span class="sec-val good">100%</span></div>
           </div>
         </div>
-        <div style="font-size:10px;font-family:'Space Mono',monospace;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Deploy Frequency (7d)</div>
+        <div style="font-size:10px;font-family:monospace;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Deploy Frequency (7d)</div>
         <div class="chart-bars" id="deploy-chart"></div>
       </div>
     </div>
@@ -536,7 +536,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
       <div class="card span2">
         <div class="card-header">
           <div class="card-title">🤖 AI Copilot</div>
-          <div id="copilot-tag-full" style="font-size:9px;font-family:'Space Mono',monospace;padding:3px 8px;border-radius:4px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);color:#c4b5fd;">Offline</div>
+          <div id="copilot-tag-full" style="font-size:9px;font-family:monospace;padding:3px 8px;border-radius:4px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);color:#c4b5fd;">Offline</div>
         </div>
         <div class="ai-chat" id="full-chat" style="max-height:420px;"></div>
         <div class="ai-input-area">
@@ -547,12 +547,12 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
       <div class="card">
         <div class="card-header"><div class="card-title">Quick Commands</div></div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('Show all failed pods and recommended fix')">→ Show failed pods</button>
-          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('What is the current cluster CPU and memory usage?')">→ Resource usage</button>
-          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('List all critical CVEs and suggest remediation steps')">→ CVE remediation</button>
-          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('Suggest optimal HPA settings for ml-inference service')">→ HPA recommendation</button>
-          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('Generate an incident runbook for OOMKill events')">→ Generate runbook</button>
-          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:'Space Mono',monospace;" onclick="quickCmd('Summarize overall cluster health and active alerts')">→ Health summary</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:monospace;" onclick="quickCmd('Show all failed pods and recommended fix')">→ Show failed pods</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:monospace;" onclick="quickCmd('What is the current cluster CPU and memory usage?')">→ Resource usage</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:monospace;" onclick="quickCmd('List all critical CVEs and suggest remediation steps')">→ CVE remediation</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:monospace;" onclick="quickCmd('Suggest optimal HPA settings for ml-inference service')">→ HPA recommendation</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:monospace;" onclick="quickCmd('Generate an incident runbook for OOMKill events')">→ Generate runbook</button>
+          <button class="btn btn-ghost" style="text-align:left;font-size:11px;font-family:monospace;" onclick="quickCmd('Summarize overall cluster health and active alerts')">→ Health summary</button>
         </div>
       </div>
     </div>
@@ -896,7 +896,7 @@ function renderNodes(data, live) {
   }).join(''));
   setHTML('k8s-nodes-list', data.map(n=>`
     <div class="metric-row">
-      <div><div style="font-weight:700;font-family:'Space Mono',monospace;font-size:12px;">${n.name}</div>
+      <div><div style="font-weight:700;font-family:monospace;font-size:12px;">${n.name}</div>
       <div class="metric-name">kubelet: ${n.version||'—'}</div></div>
       <span class="sec-val ${n.status==='Ready'?'good':'bad'}">${n.status}</span>
     </div>`).join(''));
@@ -946,8 +946,8 @@ function renderServices() {
         <div class="metric-name">${s.lang} · ${s.pods} pods · ${s.version}</div>
       </div>
       <div style="display:flex;gap:20px;align-items:center;">
-        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">CPU ${s.cpu}</span>
-        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">MEM ${s.mem}</span>
+        <span style="font-family:monospace;font-size:11px;color:var(--muted);">CPU ${s.cpu}</span>
+        <span style="font-family:monospace;font-size:11px;color:var(--muted);">MEM ${s.mem}</span>
         <span class="sec-val ${sc[s.status]}">${s.status.toUpperCase()}</span>
       </div>
     </div>`).join(''));
@@ -978,7 +978,7 @@ async function loadCICDRuns() {
       runs.map(r => `
         <div class="metric-row">
           <div>
-            <div style="font-weight:700;font-size:12px;font-family:'Space Mono',monospace;">Run #${r.id.toString().slice(-6)}</div>
+            <div style="font-weight:700;font-size:12px;font-family:monospace;">Run #${r.id.toString().slice(-6)}</div>
             <div class="metric-name">${new Date(r.created_at).toLocaleString()}</div>
           </div>
           <div style="display:flex;gap:10px;align-items:center;">
@@ -1023,7 +1023,7 @@ function renderCVE(data) {
   setHTML('cve-list', data.map(c=>`
     <div class="metric-row">
       <div>
-        <div style="font-weight:700;font-size:12px;font-family:'Space Mono',monospace;">${c.id}</div>
+        <div style="font-weight:700;font-size:12px;font-family:monospace;">${c.id}</div>
         <div class="metric-name">${c.pkg} · Score: ${c.score}</div>
       </div>
       <div style="display:flex;gap:10px;align-items:center;">
@@ -1038,7 +1038,7 @@ function renderVault(data) {
   setHTML('vault-list', data.map(v=>`
     <div class="metric-row">
       <div>
-        <div style="font-weight:700;font-size:12px;font-family:'Space Mono',monospace;">${v.path}</div>
+        <div style="font-weight:700;font-size:12px;font-family:monospace;">${v.path}</div>
         <div class="metric-name">Type: ${v.type} · Rotated: ${v.rotated}</div>
       </div>
       <div style="display:flex;gap:10px;align-items:center;">
@@ -1056,8 +1056,8 @@ function renderHealRules() {
         <div class="metric-name">Action: ${r.action}</div>
       </div>
       <div style="display:flex;gap:14px;align-items:center;">
-        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">${r.runs} runs</span>
-        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent3);">${r.success}% success</span>
+        <span style="font-family:monospace;font-size:11px;color:var(--muted);">${r.runs} runs</span>
+        <span style="font-family:monospace;font-size:11px;color:var(--accent3);">${r.success}% success</span>
         <button class="btn btn-ghost btn-sm" onclick="showToast('Rule test triggered','info')">Test</button>
       </div>
     </div>`).join(''));
@@ -1201,21 +1201,21 @@ async function runAutoHeal() {
   const btn = document.getElementById('heal-btn');
   btn.textContent = '⏳ Healing...';
   btn.disabled = true;
-  setHTML('heal-status', '<div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--warn);padding:8px;background:rgba(245,158,11,0.1);border-radius:6px;border:1px solid rgba(245,158,11,0.2);">🔍 Scanning active alerts and determining actions...</div>');
+  setHTML('heal-status', '<div style="font-size:11px;font-family:monospace;color:var(--warn);padding:8px;background:rgba(245,158,11,0.1);border-radius:6px;border:1px solid rgba(245,158,11,0.2);">🔍 Scanning active alerts and determining actions...</div>');
   try {
     const r = await api('/api/autoheal/run', {method:'POST'});
     if(r.healed > 0) {
-      setHTML('heal-status', `<div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--accent3);padding:8px;background:rgba(16,185,129,0.1);border-radius:6px;border:1px solid rgba(16,185,129,0.2);">✅ Auto-healed ${r.healed} issue(s) successfully!</div>`);
+      setHTML('heal-status', `<div style="font-size:11px;font-family:monospace;color:var(--accent3);padding:8px;background:rgba(16,185,129,0.1);border-radius:6px;border:1px solid rgba(16,185,129,0.2);">✅ Auto-healed ${r.healed} issue(s) successfully!</div>`);
       showToast(`⚡ Auto-healed ${r.healed} issue(s)!`, 'success');
       setText('heal-count', r.healed);
     } else {
-      setHTML('heal-status', '<div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--accent);padding:8px;background:rgba(0,229,255,0.1);border-radius:6px;border:1px solid rgba(0,229,255,0.2);">✓ No critical issues found — cluster is healthy!</div>');
+      setHTML('heal-status', '<div style="font-size:11px;font-family:monospace;color:var(--accent);padding:8px;background:rgba(0,229,255,0.1);border-radius:6px;border:1px solid rgba(0,229,255,0.2);">✓ No critical issues found — cluster is healthy!</div>');
       showToast('✓ No issues to heal', 'info');
     }
     if(r.log && r.log.length) renderHealLiveLog(r.log);
     await loadHealLog();
   } catch(e) {
-    setHTML('heal-status', `<div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--danger);padding:8px;">⚠ Error: ${e.message}</div>`);
+    setHTML('heal-status', `<div style="font-size:11px;font-family:monospace;color:var(--danger);padding:8px;">⚠ Error: ${e.message}</div>`);
     showToast('⚠ Auto-heal failed: ' + e.message, 'error');
   }
   btn.textContent = '▶ Run Auto-Heal Now';
