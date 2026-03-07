@@ -681,7 +681,10 @@ const MOCK_HEAL = [
 async function api(path, opts={}) {
   BASE = document.getElementById('backend-url').value.replace(/\/$/,'');
   const headers = {'Content-Type':'application/json', 'ngrok-skip-browser-warning': 'true', ...((opts.headers)||{})};
-  const res = await fetch(BASE + path, {...opts, headers});
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60000);
+  const res = await fetch(BASE + path, {...opts, headers, signal: controller.signal});
+  clearTimeout(timeout);
   if (!res.ok) throw new Error(`${res.status}`);
   return res.json();
 }
