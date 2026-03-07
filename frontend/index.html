@@ -561,10 +561,21 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   <!-- AUTO-HEAL PAGE -->
   <div id="page-autoheal" class="page-section">
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Auto-Healed</div><div class="stat-value cyan">148</div><div class="stat-change">↑ this month</div><div class="stat-icon">⚡</div></div>
+      <div class="stat-card"><div class="stat-label">Auto-Healed</div><div class="stat-value cyan" id="heal-count">0</div><div class="stat-change">↑ this session</div><div class="stat-icon">⚡</div></div>
       <div class="stat-card green"><div class="stat-label">Avg Heal Time</div><div class="stat-value green">17s</div><div class="stat-change">↓ 60% vs manual</div><div class="stat-icon">⏱</div></div>
       <div class="stat-card purple"><div class="stat-label">Success Rate</div><div class="stat-value purple">96%</div><div class="stat-change">↑ 2% this month</div><div class="stat-icon">✅</div></div>
-      <div class="stat-card warn"><div class="stat-label">Active Rules</div><div class="stat-value warn">23</div><div class="stat-change">4 namespaces</div><div class="stat-icon">📋</div></div>
+      <div class="stat-card warn"><div class="stat-label">Active Alerts</div><div class="stat-value warn" id="heal-alert-count">—</div><div class="stat-change">firing now</div><div class="stat-icon">🔔</div></div>
+    </div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <div class="card-title">⚡ Auto-Heal Engine</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" id="heal-btn" onclick="runAutoHeal()">▶ Run Auto-Heal Now</button>
+          <button class="btn btn-ghost btn-sm" onclick="loadHealLog()">↻ Refresh Log</button>
+        </div>
+      </div>
+      <div id="heal-status" style="margin-bottom:16px;"></div>
+      <div id="heal-live-log"><div class="empty-state">Click "Run Auto-Heal" to scan alerts and auto-fix issues</div></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title">Auto-Heal Rules</div><button class="btn btn-primary btn-sm" onclick="showToast('Rule wizard coming soon','info')">+ Add Rule</button></div>
@@ -669,7 +680,8 @@ const MOCK_HEAL = [
 // ─── API HELPER ───────────────────────────────────────────────────────────────
 async function api(path, opts={}) {
   BASE = document.getElementById('backend-url').value.replace(/\/$/,'');
-  const res = await fetch(BASE + path, {headers:{'Content-Type':'application/json'}, ...opts});
+  const headers = {'Content-Type':'application/json', 'ngrok-skip-browser-warning': 'true', ...((opts.headers)||{})};
+  const res = await fetch(BASE + path, {...opts, headers});
   if (!res.ok) throw new Error(`${res.status}`);
   return res.json();
 }
@@ -1181,6 +1193,54 @@ function showTyping(id) {
 function removeTyping(id) { const t=document.getElementById(`typing-${id}`); if(t)t.remove(); }
 function quickCmd(cmd) { document.getElementById('full-input').value=cmd; sendChat('full'); }
 
+// ─── AUTO-HEAL ───────────────────────────────────────────────────────────────
+async function runAutoHeal() {
+  const btn = document.getElementById('heal-btn');
+  btn.textContent = '⏳ Healing...';
+  btn.disabled = true;
+  setHTML('heal-status', '<div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--warn);padding:8px;background:rgba(245,158,11,0.1);border-radius:6px;border:1px solid rgba(245,158,11,0.2);">🔍 Scanning active alerts and determining actions...</div>');
+  try {
+    const r = await api('/api/autoheal/run', {method:'POST'});
+    if(r.healed > 0) {
+      setHTML('heal-status', `<div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--accent3);padding:8px;background:rgba(16,185,129,0.1);border-radius:6px;border:1px solid rgba(16,185,129,0.2);">✅ Auto-healed ${r.healed} issue(s) successfully!</div>`);
+      showToast(`⚡ Auto-healed ${r.healed} issue(s)!`, 'success');
+      setText('heal-count', r.healed);
+    } else {
+      setHTML('heal-status', '<div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--accent);padding:8px;background:rgba(0,229,255,0.1);border-radius:6px;border:1px solid rgba(0,229,255,0.2);">✓ No critical issues found — cluster is healthy!</div>');
+      showToast('✓ No issues to heal', 'info');
+    }
+    if(r.log && r.log.length) renderHealLiveLog(r.log);
+    await loadHealLog();
+  } catch(e) {
+    setHTML('heal-status', `<div style="font-size:11px;font-family:'Space Mono',monospace;color:var(--danger);padding:8px;">⚠ Error: ${e.message}</div>`);
+    showToast('⚠ Auto-heal failed: ' + e.message, 'error');
+  }
+  btn.textContent = '▶ Run Auto-Heal Now';
+  btn.disabled = false;
+}
+
+async function loadHealLog() {
+  try {
+    const r = await api('/api/autoheal/log');
+    const log = r.log || [];
+    setText('heal-count', r.total || 0);
+    if(log.length) renderHealLiveLog(log);
+  } catch(e) {}
+}
+
+function renderHealLiveLog(log) {
+  const actionColor = {restart:'cyan', scale:'warn', 'patch-memory':'purple'};
+  setHTML('heal-live-log', log.map(h => `
+    <div class="metric-row">
+      <div>
+        <div style="font-weight:700;font-size:12px;">⚡ ${h.alert||'Unknown Alert'}</div>
+        <div class="metric-name">Pod: ${h.pod||'—'} · Action: ${h.decision?.action||'—'} · ${h.decision?.reason||''}</div>
+        <div class="metric-name">${h.timestamp ? new Date(h.timestamp).toLocaleString() : ''}</div>
+      </div>
+      <span class="sec-val ${actionColor[h.decision?.action]||'good'}">${(h.decision?.action||'done').toUpperCase()}</span>
+    </div>`).join('') || '<div class="empty-state">No heal actions yet</div>');
+}
+
 // ─── DEPLOY ───────────────────────────────────────────────────────────────────
 function openDeployModal() { document.getElementById('deploy-modal').classList.add('open'); }
 function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
@@ -1238,6 +1298,7 @@ function navTo(page, el) {
   if(page==='kubernetes') loadK8sPage();
   if(page==='metrics')    loadMetrics();
   if(page==='alerts')     loadAlerts();
+  if(page==='autoheal')   { loadHealLog(); setText('heal-alert-count', allAlerts.filter(a=>a.sev==='critical'||a.sev==='warning').length); }
 }
 
 // ─── THEME ────────────────────────────────────────────────────────────────────
