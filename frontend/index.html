@@ -328,7 +328,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   <div class="config-bar">
     <div class="backend-dot" id="backend-dot"></div>
     <span class="config-label">Backend URL</span>
-    <input class="config-input" id="backend-url" value="http://localhost:8000" placeholder="http://localhost:8000" onchange="pingBackend()"/>
+    <input class="config-input" id="backend-url" value="https://ai-powered-idp.onrender.com" placeholder="https://ai-powered-idp.onrender.com" onchange="pingBackend()"/>
     <button class="btn btn-ghost btn-sm" onclick="pingBackend()">Test Connection</button>
     <span id="backend-status" style="font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);">Not connected</span>
     <span style="margin-left:auto;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);">🟢 Live = real backend &nbsp;|&nbsp; 🔘 Offline = mock data</span>
@@ -612,7 +612,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-let BASE = 'http://localhost:8000';
+let BASE = 'https://ai-powered-idp.onrender.com';
 let backendOnline = false;
 let liveLogsOn = true, logInterval, refreshInterval;
 let clusterState = {};
