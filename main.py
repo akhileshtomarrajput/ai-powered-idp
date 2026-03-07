@@ -37,8 +37,10 @@ app = FastAPI(title="AI-Powered IDP", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
@@ -533,3 +535,47 @@ async def get_cicd_runs():
         )
         runs = [{"id": x["id"], "status": x["status"], "conclusion": x["conclusion"], "created_at": x["created_at"], "url": x["html_url"]} for x in r.json().get("workflow_runs", [])]
         return {"runs": runs}
+
+# Auto-heal log storage
+_heal_history = []
+
+@app.get("/api/autoheal/log")
+async def get_heal_log():
+    return {"log": _heal_history, "total": len(_heal_history)}
+
+@app.post("/api/autoheal/run")
+async def run_autoheal():
+    """Fetch active alerts and auto-heal them"""
+    try:
+        alerts_data = await get_alerts()
+        firing = [a for a in alerts_data if a.get("status") == "firing" and a.get("sev") in ["critical","warning"]]
+        if not firing:
+            return {"message": "No firing alerts to heal", "healed": 0}
+        payload = {"alerts": [{"labels": {"alertname": a["name"], "pod": a.get("desc","").split("·")[0].strip(), "namespace": "default"}, "annotations": {}} for a in firing]}
+        result = await auto_heal(Request.__new__(Request))
+        _heal_history.extend(result.get("log", []))
+        return result
+    except Exception as e:
+        return {"error": str(e), "healed": 0}
+
+# Auto-heal log storage
+_heal_history = []
+
+@app.get("/api/autoheal/log")
+async def get_heal_log():
+    return {"log": _heal_history, "total": len(_heal_history)}
+
+@app.post("/api/autoheal/run")
+async def run_autoheal():
+    """Fetch active alerts and auto-heal them"""
+    try:
+        alerts_data = await get_alerts()
+        firing = [a for a in alerts_data if a.get("status") == "firing" and a.get("sev") in ["critical","warning"]]
+        if not firing:
+            return {"message": "No firing alerts to heal", "healed": 0}
+        payload = {"alerts": [{"labels": {"alertname": a["name"], "pod": a.get("desc","").split("·")[0].strip(), "namespace": "default"}, "annotations": {}} for a in firing]}
+        result = await auto_heal(Request.__new__(Request))
+        _heal_history.extend(result.get("log", []))
+        return result
+    except Exception as e:
+        return {"error": str(e), "healed": 0}
