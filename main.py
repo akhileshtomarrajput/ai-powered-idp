@@ -504,3 +504,32 @@ Respond ONLY with JSON (no markdown, no explanation):
         })
 
     return {"healed": len(heal_log), "log": heal_log}
+# CI/CD Pipeline endpoints
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
+GITHUB_REPO = os.getenv("GITHUB_REPO", "")
+
+@app.post("/api/cicd/trigger")
+async def trigger_cicd(service: str = "nginx", image: str = "latest"):
+    if not GITHUB_TOKEN:
+        return {"error": "GitHub token not configured"}
+    async with httpx.AsyncClient() as client:
+        r = await client.post(
+            f"https://api.github.com/repos/{GITHUB_REPO}/actions/workflows/deploy.yml/dispatches",
+            headers={"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"},
+            json={"ref": "main", "inputs": {"service": service, "image": image}}
+        )
+        if r.status_code == 204:
+            return {"status": "triggered", "service": service}
+        return {"error": r.text}
+
+@app.get("/api/cicd/runs")
+async def get_cicd_runs():
+    if not GITHUB_TOKEN:
+        return {"runs": []}
+    async with httpx.AsyncClient() as client:
+        r = await client.get(
+            f"https://api.github.com/repos/{GITHUB_REPO}/actions/workflows/deploy.yml/runs?per_page=5",
+            headers={"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+        )
+        runs = [{"id": x["id"], "status": x["status"], "conclusion": x["conclusion"], "created_at": x["created_at"], "url": x["html_url"]} for x in r.json().get("workflow_runs", [])]
+        return {"runs": runs}
