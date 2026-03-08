@@ -561,7 +561,7 @@ async def trigger_cicd(service: str = "nginx", image: str = "latest"):
         return {"error": "GitHub token not configured"}
     async with httpx.AsyncClient() as client:
         r = await client.post(
-            f"https://api.github.com/repos/{GITHUB_REPO}/actions/workflows/deploy.yml/dispatches",
+            f"https://api.github.com/repos/{GITHUB_REPO}/actions/workflows/242843149/dispatches",
             headers={"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"},
             json={"ref": "main", "inputs": {"service": service, "image": image}}
         )
@@ -575,7 +575,7 @@ async def get_cicd_runs():
         return {"runs": []}
     async with httpx.AsyncClient() as client:
         r = await client.get(
-            f"https://api.github.com/repos/{GITHUB_REPO}/actions/workflows/deploy.yml/runs?per_page=5",
+            f"https://api.github.com/repos/{GITHUB_REPO}/actions/workflows/242843149/runs?per_page=5",
             headers={"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
         )
         runs = [{"id": x["id"], "status": x["status"], "conclusion": x["conclusion"], "created_at": x["created_at"], "url": x["html_url"]} for x in r.json().get("workflow_runs", [])]
