@@ -552,7 +552,7 @@ Respond ONLY with JSON (no markdown, no explanation):
 
     return {"healed": len(heal_log), "log": heal_log}
 # CI/CD Pipeline endpoints
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
+GITHUB_TOKEN = os.getenv("GH_PAT_TOKEN", "")
 GITHUB_REPO = os.getenv("GITHUB_REPO", "")
 
 @app.post("/api/cicd/trigger")
