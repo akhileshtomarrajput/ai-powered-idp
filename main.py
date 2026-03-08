@@ -32,7 +32,52 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+
 app = FastAPI(title="AI-Powered IDP", version="1.0.0")
+
+scheduler = AsyncIOScheduler()
+
+@app.on_event("startup")
+async def start_scheduler():
+    scheduler.add_job(auto_heal_job, IntervalTrigger(minutes=5), id="autoheal", replace_existing=True)
+    scheduler.start()
+    print("✅ Auto-heal scheduler started — running every 5 minutes")
+
+@app.on_event("shutdown")
+async def stop_scheduler():
+    scheduler.shutdown()
+
+async def auto_heal_job():
+    print("🔄 Auto-heal scheduler triggered...")
+    try:
+        import subprocess, json as _json
+        result = subprocess.run(["kubectl", "get", "pods", "-A", "-o", "json"], capture_output=True, text=True)
+        pods_data = _json.loads(result.stdout)
+        healed = 0
+        for pod in pods_data.get("items", []):
+            name = pod["metadata"]["name"]
+            namespace = pod["metadata"]["namespace"]
+            phase = pod["status"].get("phase", "")
+            restarts = sum(c.get("restartCount", 0) for c in pod["status"].get("containerStatuses", []))
+            if phase in ["Failed", "Pending"] or restarts > 5:
+                # Get owner reference to find deployment
+                owners = pod["metadata"].get("ownerReferences", [])
+                for owner in owners:
+                    if owner["kind"] == "ReplicaSet":
+                        # Get deployment name from replicaset
+                        rs = subprocess.run(["kubectl", "get", "rs", owner["name"], "-n", namespace, "-o", "json"], capture_output=True, text=True)
+                        rs_data = _json.loads(rs.stdout)
+                        deploy_owners = rs_data.get("metadata", {}).get("ownerReferences", [])
+                        for d in deploy_owners:
+                            if d["kind"] == "Deployment":
+                                subprocess.run(["kubectl", "rollout", "restart", f"deployment/{d['name']}", "-n", namespace])
+                                print(f"✅ Restarted deployment/{d['name']} in {namespace}")
+                                healed += 1
+        print(f"✅ Auto-heal job done — {healed} deployments restarted")
+    except Exception as e:
+        print(f"❌ Auto-heal job error: {e}")
 
 app.add_middleware(
     CORSMiddleware,
