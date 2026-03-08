@@ -547,14 +547,49 @@ async def get_heal_log():
 async def run_autoheal():
     """Fetch active alerts and auto-heal them"""
     try:
-        alerts_data = await get_alerts()
-        firing = [a for a in alerts_data if a.get("status") == "firing" and a.get("sev") in ["critical","warning"]]
-        if not firing:
-            return {"message": "No firing alerts to heal", "healed": 0}
-        payload = {"alerts": [{"labels": {"alertname": a["name"], "pod": a.get("desc","").split("·")[0].strip(), "namespace": "default"}, "annotations": {}} for a in firing]}
-        result = await auto_heal(Request.__new__(Request))
-        _heal_history.extend(result.get("log", []))
-        return result
+        # Get real failed/pending pods from kubectl
+        import subprocess
+        result = subprocess.run(["kubectl", "get", "pods", "-A", "-o", "json"], capture_output=True, text=True)
+        import json as _json
+        pods_data = _json.loads(result.stdout)
+        failed_pods = []
+        for pod in pods_data.get("items", []):
+            name = pod["metadata"]["name"]
+            namespace = pod["metadata"]["namespace"]
+            phase = pod["status"].get("phase", "")
+            restarts = sum(c.get("restartCount", 0) for c in pod["status"].get("containerStatuses", []))
+            if phase in ["Failed", "Pending"] or restarts > 3:
+                alertname = "PodFailed" if phase == "Failed" else ("PodPending" if phase == "Pending" else "HighRestarts")
+                failed_pods.append({"labels": {"alertname": alertname, "pod": name, "namespace": namespace}, "annotations": {"restarts": str(restarts), "phase": phase}})
+        if not failed_pods:
+            return {"message": "No failed pods found — cluster is healthy!", "healed": 0}
+        alerts_payload = failed_pods
+        heal_log = []
+        healed = 0
+        for alert in alerts_payload:
+            alert_name = alert["labels"].get("alertname", "")
+            pod = alert["labels"].get("pod", "")
+            namespace = alert["labels"].get("namespace", "default")
+            prompt = f"""Alert: {alert_name}\nPod: {pod}\nNamespace: {namespace}\nWhat is the single best kubectl action to resolve this?\nRespond ONLY with JSON: {{"action": "restart|scale|patch-memory", "value": "optional_value", "reason": "one line reason"}}"""
+            messages = [
+                {"role": "system", "content": "You are a Kubernetes auto-heal engine. Respond only with valid JSON, no markdown."},
+                {"role": "user", "content": prompt},
+            ]
+            try:
+                ai_text = await call_groq(messages, max_tokens=200)
+                ai_text = ai_text.strip().replace("```json","").replace("```","").strip()
+                decision = json.loads(ai_text)
+                action = decision.get("action","restart")
+                if action == "restart":
+                    subprocess.run(["kubectl","rollout","restart","deployment",pod,"-n",namespace], capture_output=True)
+                elif action == "scale":
+                    subprocess.run(["kubectl","scale","deployment",pod,"--replicas=2","-n",namespace], capture_output=True)
+                heal_log.append({"alert": alert_name, "pod": pod, "action": action, "reason": decision.get("reason",""), "status": "healed"})
+                healed += 1
+            except Exception as e:
+                heal_log.append({"alert": alert_name, "pod": pod, "action": "unknown", "reason": str(e), "status": "failed"})
+        _heal_history.extend(heal_log)
+        return {"healed": healed, "log": heal_log}
     except Exception as e:
         return {"error": str(e), "healed": 0}
 
@@ -569,13 +604,48 @@ async def get_heal_log():
 async def run_autoheal():
     """Fetch active alerts and auto-heal them"""
     try:
-        alerts_data = await get_alerts()
-        firing = [a for a in alerts_data if a.get("status") == "firing" and a.get("sev") in ["critical","warning"]]
-        if not firing:
-            return {"message": "No firing alerts to heal", "healed": 0}
-        payload = {"alerts": [{"labels": {"alertname": a["name"], "pod": a.get("desc","").split("·")[0].strip(), "namespace": "default"}, "annotations": {}} for a in firing]}
-        result = await auto_heal(Request.__new__(Request))
-        _heal_history.extend(result.get("log", []))
-        return result
+        # Get real failed/pending pods from kubectl
+        import subprocess
+        result = subprocess.run(["kubectl", "get", "pods", "-A", "-o", "json"], capture_output=True, text=True)
+        import json as _json
+        pods_data = _json.loads(result.stdout)
+        failed_pods = []
+        for pod in pods_data.get("items", []):
+            name = pod["metadata"]["name"]
+            namespace = pod["metadata"]["namespace"]
+            phase = pod["status"].get("phase", "")
+            restarts = sum(c.get("restartCount", 0) for c in pod["status"].get("containerStatuses", []))
+            if phase in ["Failed", "Pending"] or restarts > 3:
+                alertname = "PodFailed" if phase == "Failed" else ("PodPending" if phase == "Pending" else "HighRestarts")
+                failed_pods.append({"labels": {"alertname": alertname, "pod": name, "namespace": namespace}, "annotations": {"restarts": str(restarts), "phase": phase}})
+        if not failed_pods:
+            return {"message": "No failed pods found — cluster is healthy!", "healed": 0}
+        alerts_payload = failed_pods
+        heal_log = []
+        healed = 0
+        for alert in alerts_payload:
+            alert_name = alert["labels"].get("alertname", "")
+            pod = alert["labels"].get("pod", "")
+            namespace = alert["labels"].get("namespace", "default")
+            prompt = f"""Alert: {alert_name}\nPod: {pod}\nNamespace: {namespace}\nWhat is the single best kubectl action to resolve this?\nRespond ONLY with JSON: {{"action": "restart|scale|patch-memory", "value": "optional_value", "reason": "one line reason"}}"""
+            messages = [
+                {"role": "system", "content": "You are a Kubernetes auto-heal engine. Respond only with valid JSON, no markdown."},
+                {"role": "user", "content": prompt},
+            ]
+            try:
+                ai_text = await call_groq(messages, max_tokens=200)
+                ai_text = ai_text.strip().replace("```json","").replace("```","").strip()
+                decision = json.loads(ai_text)
+                action = decision.get("action","restart")
+                if action == "restart":
+                    subprocess.run(["kubectl","rollout","restart","deployment",pod,"-n",namespace], capture_output=True)
+                elif action == "scale":
+                    subprocess.run(["kubectl","scale","deployment",pod,"--replicas=2","-n",namespace], capture_output=True)
+                heal_log.append({"alert": alert_name, "pod": pod, "action": action, "reason": decision.get("reason",""), "status": "healed"})
+                healed += 1
+            except Exception as e:
+                heal_log.append({"alert": alert_name, "pod": pod, "action": "unknown", "reason": str(e), "status": "failed"})
+        _heal_history.extend(heal_log)
+        return {"healed": healed, "log": heal_log}
     except Exception as e:
         return {"error": str(e), "healed": 0}
