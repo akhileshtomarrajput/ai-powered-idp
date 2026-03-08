@@ -3,4 +3,5 @@ uvicorn
 httpx
 pydantic
 python-dotenv
-aiofilesapscheduler
+aiofiles
+apscheduler
