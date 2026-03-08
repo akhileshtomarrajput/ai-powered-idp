@@ -1152,7 +1152,7 @@ async function sendChat(id) {
     chatHistory[id].push({role:'ai', text:reply, time:now()});
   } catch(e) {
     removeTyping(id);
-    chatHistory[id].push({role:'ai', text:`Error: ${e.message}\n\nMake sure your backend is running and GEMINI_API_KEY is set in .env`, time:now()});
+    chatHistory[id].push({role:'ai', text:`Error: ${e.message}\n\nMake sure your backend is running and GROQ_API_KEY is set in .env`, time:now()});
   }
   renderChat(id);
 }
