@@ -23,6 +23,19 @@ cd /workspaces/ai-powered-idp
 nohup python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 > /tmp/idp.log 2>&1 &
 sleep 3
 
+# 6. Get Codespaces public URL
+CODESPACE_URL="https://${CODESPACE_NAME}-8000.app.github.dev"
+
+echo ""
 echo "✅ All services running!"
-echo "🌐 Codespaces: port 8000 (make Public in Ports tab)"
-echo "🌐 Render: https://ai-powered-idp.onrender.com (always on)"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🌐 RENDER URL (permanent, Grafana metrics):"
+echo "   https://ai-powered-idp.onrender.com"
+echo ""
+echo "🌐 CODESPACES URL (real pods, real kubectl):"
+echo "   $CODESPACE_URL"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "📌 Open Codespaces URL directly in browser"
+echo "   for real pod data!"
