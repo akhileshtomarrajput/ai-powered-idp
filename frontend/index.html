@@ -1271,10 +1271,6 @@ async function submitDeploy() {
     showToast(`⚠ Deploy failed: ${e.message}`, 'error');
   }
 }
-  } catch(e) {
-    showToast(`⚠ Could not trigger pipeline: ${e.message}`, 'error');
-  }
-}
 
 // ─── NAVIGATION ───────────────────────────────────────────────────────────────
 const PAGE_META = {

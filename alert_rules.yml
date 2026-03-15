@@ -1,0 +1,42 @@
+groups:
+  - name: idp-alerts
+    rules:
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 70
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: "Memory usage is above 70% on EC2"
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          description: "CPU usage above 80% on EC2"
+
+      - alert: PodNotRunning
+        expr: kube_pod_status_phase{phase=~"Failed|Pending"} > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          description: "Pod {{ $labels.pod }} is in {{ $labels.phase }} state"
+
+      - alert: PodRestartLoop
+        expr: rate(kube_pod_container_status_restarts_total[5m]) * 300 > 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          description: "Pod {{ $labels.pod }} is restarting frequently"
+
+      - alert: DeploymentUnavailable
+        expr: kube_deployment_status_replicas_unavailable > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          description: "Deployment {{ $labels.deployment }} has unavailable replicas"
