@@ -118,6 +118,7 @@ class ChatMessage(BaseModel):
 class DeployRequest(BaseModel):
     name: str
     version: str
+    image: str = ""
     namespace: str = "default"
     replicas: int = 2
     environment: str = "staging"
@@ -366,7 +367,7 @@ def trigger_deploy(req: DeployRequest, background_tasks: BackgroundTasks):
                 "spec": {
                     "containers": [{
                         "name":  req.name,
-                        "image": f"{req.name}:{req.version}",
+                        "image": req.image if req.image else f"{req.name}:{req.version}",
                         "resources": {
                             "requests": {"memory": "256Mi", "cpu": "100m"},
                             "limits":   {"memory": "512Mi", "cpu": "500m"},

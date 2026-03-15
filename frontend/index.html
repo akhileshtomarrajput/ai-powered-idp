@@ -328,7 +328,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   <div class="config-bar">
     <div class="backend-dot" id="backend-dot"></div>
     <span class="config-label">Backend URL</span>
-    <input class="config-input" id="backend-url" value="https://ai-powered-idp.onrender.com" placeholder="https://ai-powered-idp.onrender.com" onchange="pingBackend()"/>
+    <input class="config-input" id="backend-url" value="http://13.201.26.199:8000" placeholder="https://ai-powered-idp.onrender.com" onchange="pingBackend()"/>
     <button class="btn btn-ghost btn-sm" onclick="pingBackend()">Test Connection</button>
     <span id="backend-status" style="font-size:10px;font-family:monospace;color:var(--muted);">Not connected</span>
     <span style="margin-left:auto;font-size:10px;font-family:monospace;color:var(--muted);">🟢 Live = real backend &nbsp;|&nbsp; 🔘 Offline = mock data</span>
@@ -592,7 +592,8 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
     <button class="modal-close" onclick="closeModal('deploy-modal')">✕</button>
     <div class="modal-title">Deploy New Application</div>
     <div class="modal-sub">Triggers kubectl apply via FastAPI backend</div>
-    <div class="form-row"><label class="form-label">Service Name</label><input class="form-input" id="dep-name" placeholder="e.g. payment-service"/></div>
+    <div class="form-row"><label class="form-label">Service Name</label><input class="form-input" id="dep-name" placeholder="e.g. myapp"/></div>
+    <div class="form-row"><label class="form-label">Docker Image</label><input class="form-input" id="dep-img" placeholder="e.g. nginx:latest"/></div>
     <div class="form-grid">
       <div class="form-row"><label class="form-label">Version</label><input class="form-input" id="dep-ver" placeholder="v2.4.1"/></div>
       <div class="form-row"><label class="form-label">Replicas</label><input class="form-input" id="dep-rep" type="number" value="2" min="1" max="20"/></div>
@@ -612,7 +613,7 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-let BASE = 'https://ai-powered-idp.onrender.com';
+let BASE = 'http://13.201.26.199:8000';
 let backendOnline = false;
 let liveLogsOn = true, logInterval, refreshInterval;
 let clusterState = {};
@@ -1251,25 +1252,25 @@ function closeModal(id)    { document.getElementById(id).classList.remove('open'
 async function submitDeploy() {
   const name      = document.getElementById('dep-name').value || 'new-service';
   const version   = document.getElementById('dep-ver').value  || 'v1.0.0';
+  const image     = document.getElementById('dep-img').value  || 'nginx:latest';
   const replicas  = parseInt(document.getElementById('dep-rep').value) || 2;
   const environment = document.getElementById('dep-env').value;
   const namespace = document.getElementById('dep-ns').value;
   closeModal('deploy-modal');
-  showToast(`🚀 Triggering CI/CD pipeline for ${name}:${version}...`, 'info');
-  
-  // Trigger real GitHub Actions pipeline
+  showToast(`🚀 Deploying ${name} using ${image}...`, 'info');
   try {
-    const r = await api(`/api/cicd/trigger?service=${encodeURIComponent(name)}&image=${encodeURIComponent(version)}`, {method:'POST'});
-    if(r.status === 'triggered') {
-      showToast(`✅ Pipeline triggered for ${name}:${version} → ${environment}`, 'success');
-      // Update deployments list optimistically
-      allDeployments.unshift({name,namespace,replicas,ready:0,image:`${name}:${version}`,updated:new Date().toISOString()});
-      renderDeployments(allDeployments, backendOnline);
-      // Refresh pipeline runs after 3s
-      setTimeout(()=>{ loadCICDRuns(); navTo('overview', document.querySelector('.nav-item')); }, 3000);
-    } else {
-      showToast(`⚠ Pipeline error: ${r.error||'Unknown'}`, 'error');
-    }
+    const r = await api('/api/deploy', {
+      method: 'POST',
+      body: JSON.stringify({name, version, image, replicas, namespace, environment})
+    });
+    showToast(`✅ Deployed ${name} → ${namespace} using ${image}`, 'success');
+    allDeployments.unshift({name,namespace,replicas,ready:0,image,updated:new Date().toISOString()});
+    renderDeployments(allDeployments, backendOnline);
+    setTimeout(()=>{ loadK8s(); }, 5000);
+  } catch(e) {
+    showToast(`⚠ Deploy failed: ${e.message}`, 'error');
+  }
+}
   } catch(e) {
     showToast(`⚠ Could not trigger pipeline: ${e.message}`, 'error');
   }
